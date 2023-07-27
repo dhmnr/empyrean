@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 
+#include <iostream>
+
 Sdl2Visualizer::Sdl2Visualizer(std::string title, int width, int height) {
   windowWidth = width;
   windowHeight = height;

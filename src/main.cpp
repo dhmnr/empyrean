@@ -42,14 +42,15 @@ int display() {
 
 SDL_Point* randomPoint() {
   SDL_Point* points = new SDL_Point[2];
-  points[0] = {400,400};
-  points[1] = {rand()%800, rand()%800};
+  points[0] = {400, 400};
+  points[1] = {rand() % 800, rand() % 800};
   return points;
 }
 
 int main() {
-  AbstractVisualizer* vizr = new Sdl2Visualizer("SDL2 Window Title", WINDOW_WIDTH, WINDOW_HEIGHT);
-  vizr->Initialize();
-  vizr->RenderLoop(randomPoint);
+  BaseVisualizer* visualizer
+      = new Sdl2Visualizer("Empyrean N-Body Simulator", WINDOW_WIDTH, WINDOW_HEIGHT);
+  visualizer->Initialize();
+  visualizer->RenderLoop(randomPoint);
   return 0;
 }

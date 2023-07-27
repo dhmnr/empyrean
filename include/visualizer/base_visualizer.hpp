@@ -1,10 +1,11 @@
 #pragma once
 
 #include <SDL.h>
+
 #include <string>
 
-class AbstractVisualizer {
- public:
+class BaseVisualizer {
+public:
   int windowWidth;
   int windowHeight;
   std::string windowTitle;

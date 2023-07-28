@@ -1,6 +1,7 @@
 #include <SDL.h>
 // #include <cuda_runtime.h>
 // #include <empyrean/version.h>
+#include "empyrean/engine/nbody_engine.hpp"
 #include "empyrean/visualizer/base_visualizer.hpp"
 #include "empyrean/visualizer/sdl2_visualizer.hpp"
 
@@ -48,9 +49,10 @@ SDL_Point* randomPoint() {
 }
 
 int main() {
+  NbodyEngine engine = new NbodyEngine(DIRECT_VERLET);
   BaseVisualizer* visualizer
       = new Sdl2Visualizer("Empyrean N-Body Simulator", WINDOW_WIDTH, WINDOW_HEIGHT);
   visualizer->Initialize();
-  visualizer->RenderLoop(randomPoint);
+  visualizer->RenderLoop(engine);
   return 0;
 }

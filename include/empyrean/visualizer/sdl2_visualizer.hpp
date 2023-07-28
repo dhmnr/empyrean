@@ -13,6 +13,6 @@ public:
 
   Sdl2Visualizer(std::string windowTitle, int width, int height);
   int Initialize();
-  int RenderLoop(SDL_Point* (*updateFunction)()) override;
+  int RenderLoop(std::vector<RealVector> (*renderFunction)()) override;
   ~Sdl2Visualizer();
 };

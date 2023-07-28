@@ -3,6 +3,9 @@
 #include <SDL.h>
 
 #include <iostream>
+#include <vector>
+
+#include "empyrean/engine/nbody_engine.hpp"
 
 Sdl2Visualizer::Sdl2Visualizer(std::string title, int width, int height) {
   windowWidth = width;
@@ -40,7 +43,7 @@ int Sdl2Visualizer::Initialize() {
   return 0;
 }
 
-int Sdl2Visualizer::RenderLoop(SDL_Point* (*updateFunction)()) {
+int Sdl2Visualizer::RenderLoop(NbodyEngine engine) {
   // Main loop flag
   bool quit = false;
 
@@ -61,7 +64,7 @@ int Sdl2Visualizer::RenderLoop(SDL_Point* (*updateFunction)()) {
 
     // Draw a red rectangle
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Point* points = updateFunction();
+    SDL_Point* points = renderFunction();
     SDL_RenderDrawLines(renderer, points, 2);
     // SDL_RenderDrawPointsF(renderer, vertices, numPoints);
     // SDL_RenderFillRect(renderer, &rect);

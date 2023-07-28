@@ -2,11 +2,11 @@
 
 #include "empyrean/engine/real_vector.hpp"
 
-struct CosmicBody {
+class CosmicBody {
   // vector for historical positional data
   std::vector<RealVector> position;
   RealVector velocity;
   RealVector acceleration;
   double mass;
-  double timestep;
+  CosmicBody(RealVector position, double mass, RealVector velocity, RealVector acceleration);
 };

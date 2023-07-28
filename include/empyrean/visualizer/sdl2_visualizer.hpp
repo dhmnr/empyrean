@@ -14,5 +14,6 @@ public:
   Sdl2Visualizer(std::string windowTitle, int width, int height);
   int Initialize();
   int RenderLoop(std::vector<RealVector> (*renderFunction)()) override;
+  std::vector<SDL_Point> Sdl2Visualizer::RealVectorToSdlPoints(std::vector<RealVector> positions) {}
   ~Sdl2Visualizer();
 };

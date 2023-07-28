@@ -64,15 +64,30 @@ int Sdl2Visualizer::RenderLoop(NbodyEngine engine) {
 
     // Draw a red rectangle
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Point* points = renderFunction();
-    SDL_RenderDrawLines(renderer, points, 2);
+    engine.AdvanceTime();
+    std::vector<SDL_Point> pointVector = RealVectorToSdlPoints(engine.GetNormalizedPositions());
+    int pointsLength = pointVector.size();
+    SDL_Point* pointArray = new SDL_Point[pointsLength];
+
+    for (int i = 0; i < pointsLength; i++) {
+      pointArray[i] = pointVector[i];
+    }
+
+    // Now you have a dynamically allocated C++ array (myArray) with the same elements as the vector
+
+    // Don't forget to release the dynamically allocated memory when you're done with it
+    SDL_RenderDrawPoints(renderer, pointArray, pointsLength);
     // SDL_RenderDrawPointsF(renderer, vertices, numPoints);
     // SDL_RenderFillRect(renderer, &rect);
-
+    delete[] pointArray;
     // Update the screen
     SDL_RenderPresent(renderer);
   }
   return 0;
+}
+
+std::vector<SDL_Point> Sdl2Visualizer::RealVectorToSdlPoints(std::vector<RealVector> positions) {
+  // TODO Implement RealVectorToSdlPoints
 }
 
 Sdl2Visualizer::~Sdl2Visualizer() {

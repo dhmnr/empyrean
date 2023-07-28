@@ -49,7 +49,7 @@ SDL_Point* randomPoint() {
 }
 
 int main() {
-  NbodyEngine engine = new NbodyEngine(DIRECT_VERLET);
+  NbodyEngine engine = new NbodyEngine(DIRECT_EULER);
   BaseVisualizer* visualizer
       = new Sdl2Visualizer("Empyrean N-Body Simulator", WINDOW_WIDTH, WINDOW_HEIGHT);
   visualizer->Initialize();

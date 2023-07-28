@@ -1,4 +1,4 @@
-#include "visualizer/sdl2_visualizer.hpp"
+#include "empyrean/visualizer/sdl2_visualizer.hpp"
 
 #include <SDL.h>
 
@@ -15,6 +15,8 @@ int Sdl2Visualizer::Initialize() {
     std::cerr << "SDL initialization failed: " << SDL_GetError() << std::endl;
     return 1;
   }
+
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
   // Initialize window
   window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,

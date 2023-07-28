@@ -30,11 +30,11 @@ enable_language(CUDA)
 
 find_package(CUDAToolkit)
 # ---- Create executable ----
-
+include(cmake/SourcesFiles.cmake)
 # add your source files here
-add_executable(Empyrean src/main.cpp src/visualizer/sdl2_visualizer.cpp)
+add_executable(${PROJECT_NAME} ${EXE_SOURCES})
 # link include directories
-target_include_directories(Empyrean PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # link to your dependencies' targets here
 target_link_libraries(${PROJECT_NAME} SDL2::SDL2)
 target_link_libraries(${PROJECT_NAME} CUDA::cudart)

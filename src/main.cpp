@@ -1,15 +1,15 @@
 #include <SDL.h>
 // #include <cuda_runtime.h>
 // #include <empyrean/version.h>
-#include "visualizer/base_visualizer.hpp"
-#include "visualizer/sdl2_visualizer.hpp"
+#include "empyrean/visualizer/base_visualizer.hpp"
+#include "empyrean/visualizer/sdl2_visualizer.hpp"
 
 // #include <empyrean/cuda_functions.cuh>
 #include <iostream>
 
 // settings
-const unsigned int WINDOW_WIDTH = 800;
-const unsigned int WINDOW_HEIGHT = 800;
+const unsigned int WINDOW_WIDTH = 1920;
+const unsigned int WINDOW_HEIGHT = 1080;
 
 SDL_FPoint pivotPoint(SDL_FPoint inPoint) {
   return {inPoint.x + WINDOW_WIDTH / 2, inPoint.y + WINDOW_HEIGHT / 2};
@@ -42,8 +42,8 @@ int display() {
 
 SDL_Point* randomPoint() {
   SDL_Point* points = new SDL_Point[2];
-  points[0] = {400, 400};
-  points[1] = {rand() % 800, rand() % 800};
+  points[0] = {960, 540};
+  points[1] = {rand() % 1920, rand() % 1080};
   return points;
 }
 

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base_visualizer.hpp"
+#include "empyrean/engine/nbody_engine.hpp"
 
 class Sdl2Visualizer : public BaseVisualizer {
 public:
@@ -12,8 +13,8 @@ public:
   SDL_Renderer* renderer;
 
   Sdl2Visualizer(std::string windowTitle, int width, int height);
-  int Initialize();
-  int RenderLoop(std::vector<RealVector> (*renderFunction)()) override;
-  std::vector<SDL_Point> Sdl2Visualizer::RealVectorToSdlPoints(std::vector<RealVector> positions) {}
+  int Initialize() override;
+  int RenderLoop(NbodyEngine* engine) override;
+  SDL_Point* RealVectorToSdlPoints(std::vector<RealVector> positions, int length);
   ~Sdl2Visualizer();
 };

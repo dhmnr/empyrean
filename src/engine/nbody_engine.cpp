@@ -2,9 +2,12 @@
 
 #include <iostream>
 
-NbodyEngine::NbodyEngine(std::vector<CosmicBody> cosmicBody, double timeStep, double G,
-                         int engineType = SERIAL_EULER)
-    : cosmicBody(cosmicBody), timeStep(timeStep), G(G), engineType(engineType) {}
+#include "empyrean/engine/engine_state.hpp"
+
+NbodyEngine::NbodyEngine(EngineState state, int engineType)
+    : engineType(engineType), state(state) {}
+
+// void NbodyEngine::Initialize(InitialState) {}
 
 void NbodyEngine::AdvanceTime() {
   switch (engineType) {
@@ -13,7 +16,7 @@ void NbodyEngine::AdvanceTime() {
       break;
 
     case SERIAL_VERLET:
-      std::cerr << "Error " << std::endl;
+      std::cerr << "Error Not Implemented" << std::endl;
       break;
 
     default:
@@ -21,4 +24,6 @@ void NbodyEngine::AdvanceTime() {
   }
 }
 
-std::vector<RealVector> NbodyEngine::GetNormalizedPositions() {}
+std::vector<RealVector> NbodyEngine::GetNormalizedPositions() {
+  // TODO GetNormalizedPositions
+}

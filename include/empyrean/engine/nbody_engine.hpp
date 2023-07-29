@@ -1,6 +1,9 @@
+#pragma once
+
 #include <vector>
 
 #include "empyrean/engine/cosmic_body.hpp"
+#include "empyrean/engine/engine_state.hpp"
 #include "empyrean/engine/real_vector.hpp"
 
 #define SERIAL_EULER 0
@@ -9,11 +12,10 @@
 
 class NbodyEngine {
 public:
-  std::vector<CosmicBody> cosmicBody;
-  double G;
+  EngineState state;
   int engineType;
-  NbodyEngine(std::vector<CosmicBody> cosmicBody, double timeStep, double G,
-              int engineType = SERIAL_EULER);
+  NbodyEngine(EngineState state, int engineType = SERIAL_EULER);
+  // void NbodyEngine::Initialize(InitialState) {}
   std::vector<RealVector> GetNormalizedPositions();
   void AdvanceTime();
   void UpdatePositionsWithSerialEuler();

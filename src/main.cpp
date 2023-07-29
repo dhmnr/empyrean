@@ -1,6 +1,8 @@
 #include <SDL.h>
 // #include <cuda_runtime.h>
 // #include <empyrean/version.h>
+#include "empyrean/engine/cosmic_body.hpp"
+#include "empyrean/engine/engine_state.hpp"
 #include "empyrean/engine/nbody_engine.hpp"
 #include "empyrean/visualizer/base_visualizer.hpp"
 #include "empyrean/visualizer/sdl2_visualizer.hpp"
@@ -49,10 +51,14 @@ SDL_Point* randomPoint() {
 }
 
 int main() {
-  NbodyEngine engine = new NbodyEngine(DIRECT_EULER);
+  EngineState initialState = {{CosmicBody(RealVector(0, 0, 0), 100)}, 1, 1};
+
+  NbodyEngine* engine = new NbodyEngine(initialState, SERIAL_EULER);
+
   BaseVisualizer* visualizer
       = new Sdl2Visualizer("Empyrean N-Body Simulator", WINDOW_WIDTH, WINDOW_HEIGHT);
   visualizer->Initialize();
   visualizer->RenderLoop(engine);
+
   return 0;
 }

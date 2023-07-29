@@ -43,7 +43,7 @@ int Sdl2Visualizer::Initialize() {
   return 0;
 }
 
-int Sdl2Visualizer::RenderLoop(NbodyEngine engine) {
+int Sdl2Visualizer::RenderLoop(NbodyEngine* engine) {
   // Main loop flag
   bool quit = false;
 
@@ -64,30 +64,38 @@ int Sdl2Visualizer::RenderLoop(NbodyEngine engine) {
 
     // Draw a red rectangle
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    engine.AdvanceTime();
-    std::vector<SDL_Point> pointVector = RealVectorToSdlPoints(engine.GetNormalizedPositions());
-    int pointsLength = pointVector.size();
-    SDL_Point* pointArray = new SDL_Point[pointsLength];
+    engine->AdvanceTime();
 
-    for (int i = 0; i < pointsLength; i++) {
-      pointArray[i] = pointVector[i];
-    }
+    std::vector<RealVector> positionsVector = engine->GetNormalizedPositions();
+    int length = positionsVector.size();
+    SDL_Point* positionsArray = RealVectorToSdlPoints(positionsVector, length);
 
     // Now you have a dynamically allocated C++ array (myArray) with the same elements as the vector
 
     // Don't forget to release the dynamically allocated memory when you're done with it
-    SDL_RenderDrawPoints(renderer, pointArray, pointsLength);
+    SDL_RenderDrawPoints(renderer, positionsArray, length);
     // SDL_RenderDrawPointsF(renderer, vertices, numPoints);
     // SDL_RenderFillRect(renderer, &rect);
-    delete[] pointArray;
+    delete[] positionsArray;
     // Update the screen
     SDL_RenderPresent(renderer);
   }
   return 0;
 }
 
-std::vector<SDL_Point> Sdl2Visualizer::RealVectorToSdlPoints(std::vector<RealVector> positions) {
-  // TODO Implement RealVectorToSdlPoints
+SDL_Point* Sdl2Visualizer::RealVectorToSdlPoints(std::vector<RealVector> positions, int length) {
+  // Allocate memory for SDL_Point array based on the number of positions
+  SDL_Point* sdlPoints = new SDL_Point[length];
+
+  for (size_t i = 0; i < length; ++i) {
+    // Convert 3D RealVector to 2D SDL_Point by dropping the z-coordinate
+    int x = static_cast<int>(positions[i].x);
+    int y = static_cast<int>(positions[i].y);
+
+    sdlPoints[i] = {x, y};
+  }
+
+  return sdlPoints;
 }
 
 Sdl2Visualizer::~Sdl2Visualizer() {

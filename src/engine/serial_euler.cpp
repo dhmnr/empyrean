@@ -18,7 +18,9 @@ void NbodyEngine::UpdatePositionsWithSerialEuler() {
         // std::cout << distanceVector.GetMagnitude() << std::endl;
       }
     }
-    state.cosmicBodies[i].velocity += state.cosmicBodies[i].acceleration * state.timeStep;
+    state.cosmicBodies[i].velocity
+        += (state.cosmicBodies[i].initialAcceleration + state.cosmicBodies[i].acceleration)
+           * state.timeStep;
     state.cosmicBodies[i].position[0] += state.cosmicBodies[i].velocity * state.timeStep;
     // if (i == 1) {
     //   std::cout << "Body " << i << " velocity : " <<

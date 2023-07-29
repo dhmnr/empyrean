@@ -8,7 +8,7 @@ public:
   double y;
   double z;
   double magnitude;
-  RealVector(double x, double y, double z);
+  RealVector(double x = 0, double y = 0, double z = 0);
   double GetMagnitude();
   RealVector GetUnitVector();
   RealVector operator+(RealVector& rv);

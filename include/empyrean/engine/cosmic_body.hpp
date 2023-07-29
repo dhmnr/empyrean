@@ -10,7 +10,8 @@ public:
   std::vector<RealVector> position;
   RealVector velocity;
   RealVector acceleration;
+  RealVector initialAcceleration;
   double mass;
   CosmicBody(RealVector position, double mass, RealVector velocity = RealVector(0, 0, 0),
-             RealVector acceleration = RealVector(0, 0, 0));
+             RealVector initialAcceleration = RealVector(0, 0, 0));
 };

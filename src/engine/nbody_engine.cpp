@@ -25,5 +25,10 @@ void NbodyEngine::AdvanceTime() {
 }
 
 std::vector<RealVector> NbodyEngine::GetNormalizedPositions() {
-  // TODO GetNormalizedPositions
+  // TODO Implement NormalizedPositions
+  std::vector<RealVector> positions;
+  for (int i = 0; i < state.cosmicBodies.size(); ++i) {
+    positions.push_back(state.cosmicBodies[i].position[0]);
+  }
+  return positions;
 }

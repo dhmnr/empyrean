@@ -89,8 +89,8 @@ SDL_Point* Sdl2Visualizer::RealVectorToSdlPoints(std::vector<RealVector> positio
 
   for (size_t i = 0; i < length; ++i) {
     // Convert 3D RealVector to 2D SDL_Point by dropping the z-coordinate
-    int x = static_cast<int>(positions[i].x);
-    int y = static_cast<int>(positions[i].y);
+    int x = static_cast<int>(positions[i].x) + (windowWidth / 2);
+    int y = (windowHeight / 2) - static_cast<int>(positions[i].y);
 
     sdlPoints[i] = {x, y};
   }

@@ -2,12 +2,14 @@
 
 #include <math.h>
 
-RealVector::RealVector(double x, double y, double z) : x(x), y(y), z(z) {
-  magnitude = sqrt(x * x + y * y + z * z);
-}
+#include <iostream>
+
+RealVector::RealVector(double x, double y, double z) : x(x), y(y), z(z) {}
+
+double RealVector::GetMagnitude() { return sqrt(x * x + y * y + z * z); }
 
 RealVector RealVector::GetUnitVector() {
-  double magnitude = std::sqrt(x * x + y * y + z * z);
+  double magnitude = GetMagnitude();
   return RealVector(x / magnitude, y / magnitude, z / magnitude);
 }
 
@@ -24,6 +26,11 @@ RealVector& RealVector::operator+=(const RealVector& rv) {
   y += rv.y;
   z += rv.z;
   return *this;
+}
+
+std::ostream& operator<<(std::ostream& os, const RealVector& vec) {
+  os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+  return os;
 }
 
 // Standalone function outside the class

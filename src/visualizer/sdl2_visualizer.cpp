@@ -83,8 +83,9 @@ int Sdl2Visualizer::RenderLoop(NbodyEngine* engine) {
       averageFPS += value;
     }
     averageFPS /= last10FPS.size();
-    std::cout << "Average FPS (last 10 frames): " << averageFPS
-              << std::endl;  // Clear the screen (black)
+    // std::cout << "Average FPS (last 10 frames): " << averageFPS
+    //           << std::endl;
+    // Clear the screen (black)
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 

@@ -11,17 +11,18 @@
 #include <iostream>
 
 // settings
-const unsigned int WINDOW_WIDTH = 800;
-const unsigned int WINDOW_HEIGHT = 800;
+const unsigned int WINDOW_WIDTH = 1000;
+const unsigned int WINDOW_HEIGHT = 1000;
 
 const double GRAVITY_CONSTANT = 6.6743e-11;
 
 int main() {
   EngineState initialState
-      = {{CosmicBody(RealVector(0, 0, 0), (200 / GRAVITY_CONSTANT), RealVector(0, 0, 0)),
-          CosmicBody(RealVector(-200, 0, 0), 1, RealVector(0, 1, 0))},
+      = {{CosmicBody(RealVector(0, 0, 0), (800 / GRAVITY_CONSTANT), RealVector(0, 0, 0)),
+          CosmicBody(RealVector(-200, 0, 0), 0.0001, RealVector(0, 2, 0)),
+          CosmicBody(RealVector(400, 0, 0), 0.0001, RealVector(0, 1.4, 0))},
          GRAVITY_CONSTANT,
-         1};
+         0.5};
 
   NbodyEngine* engine = new NbodyEngine(initialState, SERIAL_EULER);
 

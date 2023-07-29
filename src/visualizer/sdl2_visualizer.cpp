@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 
+#include <chrono>
+#include <deque>
 #include <iostream>
 #include <vector>
 
@@ -46,6 +48,13 @@ int Sdl2Visualizer::Initialize() {
 int Sdl2Visualizer::RenderLoop(NbodyEngine* engine) {
   // Main loop flag
   bool quit = false;
+  std::chrono::high_resolution_clock::time_point lastFrameTime
+      = std::chrono::high_resolution_clock::now();
+  std::chrono::high_resolution_clock::time_point currentFrameTime;
+  std::chrono::duration<double> deltaTime;
+
+  double fps = 0.0;
+  std::deque<double> last10FPS;
 
   // Event handler
   SDL_Event event;
@@ -57,8 +66,25 @@ int Sdl2Visualizer::RenderLoop(NbodyEngine* engine) {
         quit = true;
       }
     }
+    currentFrameTime = std::chrono::high_resolution_clock::now();
+    deltaTime = currentFrameTime - lastFrameTime;
+    lastFrameTime = currentFrameTime;
 
-    // Clear the screen (black)
+    if (deltaTime.count() > 0.0) {
+      fps = 1.0 / deltaTime.count();
+    }
+    last10FPS.push_back(fps);
+
+    if (last10FPS.size() > 10) {
+      last10FPS.pop_front();
+    }
+    double averageFPS = 0.0;
+    for (double value : last10FPS) {
+      averageFPS += value;
+    }
+    averageFPS /= last10FPS.size();
+    std::cout << "Average FPS (last 10 frames): " << averageFPS
+              << std::endl;  // Clear the screen (black)
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 

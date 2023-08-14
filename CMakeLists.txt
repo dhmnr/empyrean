@@ -42,8 +42,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/in
 target_link_libraries(${PROJECT_NAME} 
   CUDA::cudart
   OpenGL::GL
-  glm::glm
   glfw
+  glm::glm
 )
 # setup your target's properties
 set_target_properties(Empyrean PROPERTIES CXX_STANDARD 17)

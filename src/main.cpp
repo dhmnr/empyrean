@@ -1,35 +1,64 @@
-#include <SDL.h>
 // #include <cuda_runtime.h>
 // #include <empyrean/version.h>
 #include "empyrean/engine/cosmic_body.hpp"
 #include "empyrean/engine/engine_state.hpp"
 #include "empyrean/engine/nbody_engine.hpp"
-#include "empyrean/visualizer/base_visualizer.hpp"
-#include "empyrean/visualizer/sdl2_visualizer.hpp"
 
-// #include <empyrean/cuda_functions.cuh>
 #include <iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 // settings
-const unsigned int WINDOW_WIDTH = 1000;
-const unsigned int WINDOW_HEIGHT = 1000;
+const unsigned int WINDOW_WIDTH = 800;
+const unsigned int WINDOW_HEIGHT = 800;
 
 const double GRAVITY_CONSTANT = 6.6743e-11;
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+  glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow* window) {
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+}
+
 int main() {
-  EngineState initialState
-      = {{CosmicBody(RealVector(0, 0, 0), (800 / GRAVITY_CONSTANT), RealVector(0, 0, 0)),
-          CosmicBody(RealVector(-200, 0, 0), 0.0001, RealVector(0, 2, 0)),
-          CosmicBody(RealVector(400, 0, 0), 0.0001, RealVector(0, 1.4, 0))},
-         GRAVITY_CONSTANT,
-         0.5};
+  glfwInit();
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-  NbodyEngine* engine = new NbodyEngine(initialState, SERIAL_EULER);
+  GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "EMPYREAN", NULL, NULL);
+  if (window == NULL) {
+    std::cout << "Failed to create GLFW window" << std::endl;
+    glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(window);
 
-  BaseVisualizer* visualizer
-      = new Sdl2Visualizer("Empyrean N-Body Simulator", WINDOW_WIDTH, WINDOW_HEIGHT);
-  visualizer->Initialize();
-  visualizer->RenderLoop(engine);
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    return -1;
+  }
 
+  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+  while (!glfwWindowShouldClose(window)) {
+    processInput(window);
+
+    // Rendering start
+    glClearColor(0.9f, 0.9f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Rendering end
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
+
+  glfwTerminate();
   return 0;
 }

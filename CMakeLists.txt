@@ -7,7 +7,9 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # ---- Project ----
 
-project(Empyrean LANGUAGES CXX CUDA)
+project(Empyrean LANGUAGES C CXX CUDA)
+
+enable_language(CUDA)
 
 # ---- Fetch CPM ----
 
@@ -21,14 +23,14 @@ include(${CPM_DOWNLOAD_LOCATION})
 
 # ---- Add dependencies via CPM ----
 # See https://github.com/TheLartians/CPM.cmake for details and examples
-CPMAddPackage(
-  GITHUB_REPOSITORY libsdl-org/SDL
-  GIT_TAG release-2.28.1
-)
-# CUDA Stuff
-enable_language(CUDA)
 
-find_package(CUDAToolkit)
+find_package(OpenGL REQUIRED)
+
+find_package(glfw3 REQUIRED)
+
+find_package(glm REQUIRED)
+
+find_package(CUDAToolkit REQUIRED)
 # ---- Create executable ----
 include(cmake/SourcesFiles.cmake)
 # add your source files here
@@ -36,7 +38,12 @@ add_executable(${PROJECT_NAME} ${EXE_SOURCES})
 # link include directories
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # link to your dependencies' targets here
-target_link_libraries(${PROJECT_NAME} SDL2::SDL2)
-target_link_libraries(${PROJECT_NAME} CUDA::cudart)
+
+target_link_libraries(${PROJECT_NAME} 
+  CUDA::cudart
+  OpenGL::GL
+  glm::glm
+  glfw
+)
 # setup your target's properties
 set_target_properties(Empyrean PROPERTIES CXX_STANDARD 17)

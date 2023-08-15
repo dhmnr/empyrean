@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "empyrean/engine/cosmic_body.hpp"
+#include "empyrean/engine/body.hpp"
 
 struct EngineState {
-  std::vector<CosmicBody> cosmicBodies;
+  std::vector<Body> Bodies;
   double gravityConstant;
   double timeStep;
 };

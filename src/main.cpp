@@ -1,6 +1,6 @@
 // #include <cuda_runtime.h>
 // #include <empyrean/version.h>
-#include "empyrean/engine/cosmic_body.hpp"
+#include "empyrean/engine/body.hpp"
 #include "empyrean/engine/engine_state.hpp"
 #include "empyrean/engine/nbody_engine.hpp"
 
@@ -20,10 +20,10 @@ const double GRAVITY_CONSTANT = 6.6743e-11;
 const char* vertexShaderSource
     = "#version 330 core\n"
       "layout (location = 0) in vec3 inPos;\n"
-      "uniform mat4 trans;\n"
+      // "uniform mat4 trans;\n"
       "void main()\n"
       "{\n"
-      "   gl_Position = trans * vec4(inPos, 1.0);\n"
+      "   gl_Position =  vec4(inPos, 1.0);\n"
       "   gl_PointSize = 2;\n"
       "}\0";
 const char* fragmentShaderSource
@@ -43,6 +43,15 @@ void processInput(GLFWwindow* window) {
 }
 
 int main() {
+  EngineState initialState
+      = {{Body(glm::dvec3(0, 0, 0), (0.5 / GRAVITY_CONSTANT), glm::dvec3(0, 0, 0)),
+          Body(glm::dvec3(-0.5, 0, 0), 0.0001, glm::dvec3(0, 1, 0))},
+         // Body(glm::dvec3(400, 0, 0), 0.0001, glm::dvec3(0, 1.4, 0))},
+         GRAVITY_CONSTANT,
+         0.0005};
+  int numPoints = initialState.Bodies.size();
+
+  NbodyEngine* engine = new NbodyEngine(initialState, EULER);
   // glfw: initialize and configure
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -59,6 +68,7 @@ int main() {
 
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSwapInterval(0);
 
   // glad: load all OpenGL function pointers
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -107,12 +117,12 @@ int main() {
 
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
-  float vertices[] = {
-      0.5f,  0.5f,  0.0f,  // top right
-      0.5f,  -0.5f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f,  // bottom left
-      -0.5f, 0.5f,  0.0f   // top left
-  };
+  float vertices[3 * numPoints];  //= {
+                                  //  -0.5f, -0.5f, 0.0f,  // top right
+                                  // 0.5f,  -0.5f, 0.0f,  // bottom right
+                                  // -0.5f, -0.5f, 0.0f,  // bottom left
+                                  // -0.5f, 0.5f,  0.0f   // top left
+  //};
 
   GLuint VBO, VAO;
   glGenVertexArrays(1, &VAO);
@@ -123,7 +133,7 @@ int main() {
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -148,8 +158,30 @@ int main() {
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   // render loop
   // -----------
-  float j = 0.0;
+  double previousTime = glfwGetTime();
+  int frameCount = 0;
+
+  glBindVertexArray(VAO);  // seeing as we only have a single VAO there's no need to bind it every
+                           // time, but we'll do so to keep things a bit more organized
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  float* vertexData = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+  // void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
+  // now copy data into memory
+  // for (int i = 0; i < 3 * numPoints; i++) {
+  //   vertexData[i] = 0.0f;
+  //   std::cout << vertexData[i] << std::endl;
+  // }
+
   while (!glfwWindowShouldClose(window)) {
+    double currentTime = glfwGetTime();
+    frameCount++;
+    if (currentTime - previousTime >= 1.0) {
+      // Display the frame count here any way you want.
+      std::cout << "FPS : " << frameCount << std::endl;
+
+      frameCount = 0;
+      previousTime = currentTime;
+    }
     // input
     processInput(window);
     // render
@@ -157,17 +189,20 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
     // draw our first triangle
     glUseProgram(shaderProgram);
-    int VertexTransLocation = glGetUniformLocation(shaderProgram, "trans");
+    // int VertexTransLocation = glGetUniformLocation(shaderProgram, "trans");
 
-    glBindVertexArray(VAO);  // seeing as we only have a single VAO there's no need to bind it every
-                             // time, but we'll do so to keep things a bit more organized
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(j, j, 0.0f));
-    j += 0.01;
-    for (int i = 0; i < 4; i++) {
-      glUniformMatrix4fv(VertexTransLocation, 1, GL_FALSE, glm::value_ptr(trans));
-      glDrawArrays(GL_POINTS, i, 1);
-    }
+    // for (int i = 0; i < 3 * numPoints; i++) {
+    //   vertexData[i] += 0.0001;
+    // }
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+    // memcpy(vertexData, vertices, sizeof(vertices));
+
+    // for (int i = 0; i < 1; i++) {
+    // glUniformMatrix4fv(VertexTransLocation, 1, GL_FALSE, glm::value_ptr(trans));
+    engine->updatePositions(vertexData);
+    glDrawArrays(GL_POINTS, 0, numPoints);
+    // }
     // glDrawElements(GL_POINT, 4, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0); // no need to unbind it every time
 
@@ -180,6 +215,8 @@ int main() {
 
   // optional: de-allocate all resources once they've outlived their purpose:
   // ------------------------------------------------------------------------
+  glUnmapBuffer(GL_ARRAY_BUFFER);
+
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteProgram(shaderProgram);

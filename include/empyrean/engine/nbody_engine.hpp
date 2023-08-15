@@ -1,22 +1,19 @@
 #pragma once
 
-#include <vector>
+#include <functional>
 
-#include "empyrean/engine/cosmic_body.hpp"
+#include "empyrean/engine/body.hpp"
 #include "empyrean/engine/engine_state.hpp"
-#include "empyrean/engine/real_vector.hpp"
 
-#define SERIAL_EULER 0
-#define SERIAL_VERLET 1
-#define PARALLEL_VERLET 2
+#define EULER 0
+#define VERLET 1
 
 class NbodyEngine {
 public:
   EngineState state;
-  int engineType;
-  NbodyEngine(EngineState state, int engineType = SERIAL_EULER);
-  // void NbodyEngine::Initialize(InitialState) {}
-  std::vector<RealVector> GetNormalizedPositions();
-  void AdvanceTime();
-  void UpdatePositionsWithSerialEuler();
+  std::function<void()> calculateForces;
+  NbodyEngine(EngineState state, int integrationMethod = EULER);
+  void writePositionsToVertexArray(float* vertexArray);
+  void updatePositions(float* vertexArray);
+  void calculateForcesWithDirectEuler();
 };

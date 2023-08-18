@@ -1,14 +1,15 @@
 #include "empyrean/engine/nbody_engine.hpp"
 
-#include <iostream>
 #include <math.h>
+
+#include <iostream>
 
 #include "empyrean/engine/engine_state.hpp"
 
 NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state) {
-  // std::cout << state.Bodies[0].position.x << state.Bodies[0].position.y
-  //           << state.Bodies[0].position.z << std::endl;
-  numBodies = state.Bodies.size();
+  // std::cout << state.bodies[0].position.x << state.bodies[0].position.y
+  //           << state.bodies[0].position.z << std::endl;
+  numBodies = state.bodies.size();
   switch (integrationMethod) {
     case EULER:
       this->calculateForces = std::bind(&NbodyEngine::calculateForcesWithDirectEuler, this);
@@ -30,7 +31,7 @@ void NbodyEngine::updatePositions(float* vertexArray) {
 
 void NbodyEngine::writePositionsToVertexArray(float* vertexArray) {
   for (size_t i = 0; i < numBodies; ++i) {
-    glm::dvec3 tmpVector = state.Bodies[i].position;
+    glm::dvec3 tmpVector = state.bodies[i].position;
     // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
     vertexArray[i * 3] = tmpVector.x;
     vertexArray[(i * 3) + 1] = tmpVector.y;
@@ -47,20 +48,20 @@ void NbodyEngine::calculateForcesWithDirectEuler() {
     glm::dvec3 tmpAcc = {0, 0, 0};
     for (int j = 0; j < numBodies; j++) {
       if (i != j) {
-        glm::dvec3 distanceVector = state.Bodies[j].position - state.Bodies[i].position;
+        glm::dvec3 distanceVector = state.bodies[j].position - state.bodies[i].position;
         tmpAcc += distanceVector
-                  * ((state.gravityConstant * state.Bodies[j].mass)
+                  * ((state.gravityConstant * state.bodies[j].mass)
                      / pow(glm::length(distanceVector), 3));
         // std::cout << distanceVector.GetMagnitude() << std::endl;
       }
     }
-    state.Bodies[i].acceleration = tmpAcc;
-    state.Bodies[i].velocity += state.Bodies[i].acceleration * state.timeStep;
-    state.Bodies[i].position += state.Bodies[i].velocity * state.timeStep;
-    // std::cout << "Body " << i << " | vel " << glm::length(state.Bodies[i].velocity) << "| acc "
-    //           << glm::length(state.Bodies[i].acceleration) << "| pos " <<
-    //           state.Bodies[i].position.x
-    //           << ", " << state.Bodies[i].position.y << ", " << state.Bodies[i].position.z
+    state.bodies[i].acceleration = tmpAcc;
+    state.bodies[i].velocity += state.bodies[i].acceleration * state.timeStep;
+    state.bodies[i].position += state.bodies[i].velocity * state.timeStep;
+    // std::cout << "Body " << i << " | vel " << glm::length(state.bodies[i].velocity) << "| acc "
+    //           << glm::length(state.bodies[i].acceleration) << "| pos " <<
+    //           state.bodies[i].position.x
+    //           << ", " << state.bodies[i].position.y << ", " << state.bodies[i].position.z
     //           << std::endl;
   }
 }

@@ -13,5 +13,4 @@
   NamespaceIndentation: All
   BreakBeforeBinaryOperators: All
   BreakBeforeTernaryOperators: 'true'
-  SortIncludes: 'false'
 ...

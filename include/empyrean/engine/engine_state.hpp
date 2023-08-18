@@ -5,7 +5,7 @@
 #include "empyrean/engine/body.hpp"
 
 struct EngineState {
-  std::vector<Body> Bodies;
+  std::vector<Body> bodies;
   double gravityConstant;
   double timeStep;
 };

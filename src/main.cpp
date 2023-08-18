@@ -1,16 +1,12 @@
 // #include <cuda_runtime.h>
 // #include <empyrean/version.h>
+#include <glm/glm.hpp>
+#include <iostream>
+
 #include "empyrean/engine/body.hpp"
 #include "empyrean/engine/engine_state.hpp"
 #include "empyrean/engine/nbody_engine.hpp"
 #include "empyrean/opengl/renderer.hpp"
-
-#include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 // settings
 const int WINDOW_WIDTH = 800;

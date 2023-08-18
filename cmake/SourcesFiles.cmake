@@ -1,13 +1,13 @@
 set(SOURCES
-    src/visualizer/sdl2_visualizer.cpp
-    src/engine/common.cpp
-    src/engine/cosmic_body.cpp
-    src/engine/nbody_engine.cpp
-    src/engine/real_vector.cpp
-    src/engine/serial_euler.cpp
+  src/glad.c
+  src/engine/common.cpp
+  src/engine/body.cpp
+  src/engine/nbody_engine.cpp
+  src/opengl/renderer.cpp
+  # src/engine/real_vector.cpp
 )
 
 set(EXE_SOURCES
-    src/main.cpp
-    ${SOURCES}
+  src/main.cpp
+  ${SOURCES}
 )

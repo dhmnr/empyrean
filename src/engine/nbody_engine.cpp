@@ -1,21 +1,21 @@
 #include "empyrean/engine/nbody_engine.hpp"
 
+#include <math.h>
+
 #include <iostream>
 
 #include "empyrean/engine/engine_state.hpp"
 
-NbodyEngine::NbodyEngine(EngineState state, int engineType)
-    : engineType(engineType), state(state) {}
-
-// void NbodyEngine::Initialize(InitialState) {}
-
-void NbodyEngine::AdvanceTime() {
-  switch (engineType) {
-    case SERIAL_EULER:
-      UpdatePositionsWithSerialEuler();
+NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state) {
+  // std::cout << state.bodies[0].position.x << state.bodies[0].position.y
+  //           << state.bodies[0].position.z << std::endl;
+  numBodies = state.bodies.size();
+  switch (integrationMethod) {
+    case EULER:
+      this->calculateForces = std::bind(&NbodyEngine::calculateForcesWithDirectEuler, this);
       break;
 
-    case SERIAL_VERLET:
+    case VERLET:
       std::cerr << "Error Not Implemented" << std::endl;
       break;
 
@@ -24,11 +24,44 @@ void NbodyEngine::AdvanceTime() {
   }
 }
 
-std::vector<RealVector> NbodyEngine::GetNormalizedPositions() {
-  // TODO Implement NormalizedPositions
-  std::vector<RealVector> positions;
-  for (int i = 0; i < state.cosmicBodies.size(); ++i) {
-    positions.push_back(state.cosmicBodies[i].position[0]);
+void NbodyEngine::updatePositions(float* vertexArray) {
+  calculateForces();
+  writePositionsToVertexArray(vertexArray);
+}
+
+void NbodyEngine::writePositionsToVertexArray(float* vertexArray) {
+  for (size_t i = 0; i < numBodies; ++i) {
+    glm::dvec3 tmpVector = state.bodies[i].position;
+    // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
+    vertexArray[i * 3] = tmpVector.x;
+    vertexArray[(i * 3) + 1] = tmpVector.y;
+    vertexArray[(i * 3) + 2] = tmpVector.z;
   }
-  return positions;
+  // for (size_t i = 0; i < numBodies * 3; ++i) {
+  //   std::cout << vertexArray[i] << " , ";
+  // }
+  // std::cout << std::endl;
+}
+
+void NbodyEngine::calculateForcesWithDirectEuler() {
+  for (int i = 0; i < numBodies; i++) {
+    glm::dvec3 tmpAcc = {0, 0, 0};
+    for (int j = 0; j < numBodies; j++) {
+      if (i != j) {
+        glm::dvec3 distanceVector = state.bodies[j].position - state.bodies[i].position;
+        tmpAcc += distanceVector
+                  * ((state.gravityConstant * state.bodies[j].mass)
+                     / pow(glm::length(distanceVector), 3));
+        // std::cout << distanceVector.GetMagnitude() << std::endl;
+      }
+    }
+    state.bodies[i].acceleration = tmpAcc;
+    state.bodies[i].velocity += state.bodies[i].acceleration * state.timeStep;
+    state.bodies[i].position += state.bodies[i].velocity * state.timeStep;
+    // std::cout << "Body " << i << " | vel " << glm::length(state.bodies[i].velocity) << "| acc "
+    //           << glm::length(state.bodies[i].acceleration) << "| pos " <<
+    //           state.bodies[i].position.x
+    //           << ", " << state.bodies[i].position.y << ", " << state.bodies[i].position.z
+    //           << std::endl;
+  }
 }

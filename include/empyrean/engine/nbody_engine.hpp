@@ -10,6 +10,7 @@
 
 class NbodyEngine {
 public:
+  int numBodies;
   EngineState state;
   std::function<void()> calculateForces;
   NbodyEngine(EngineState state, int integrationMethod = EULER);

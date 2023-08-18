@@ -5,10 +5,10 @@
 
 #include "empyrean/engine/engine_state.hpp"
 
-NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) {
-  this->state = state;
+NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state) {
   // std::cout << state.Bodies[0].position.x << state.Bodies[0].position.y
   //           << state.Bodies[0].position.z << std::endl;
+  numBodies = state.Bodies.size();
   switch (integrationMethod) {
     case EULER:
       this->calculateForces = std::bind(&NbodyEngine::calculateForcesWithDirectEuler, this);
@@ -29,22 +29,20 @@ void NbodyEngine::updatePositions(float* vertexArray) {
 }
 
 void NbodyEngine::writePositionsToVertexArray(float* vertexArray) {
-  for (size_t i = 0; i < state.Bodies.size(); ++i) {
+  for (size_t i = 0; i < numBodies; ++i) {
     glm::dvec3 tmpVector = state.Bodies[i].position;
     // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
     vertexArray[i * 3] = tmpVector.x;
     vertexArray[(i * 3) + 1] = tmpVector.y;
     vertexArray[(i * 3) + 2] = tmpVector.z;
   }
-  // for (size_t i = 0; i < state.Bodies.size() * 3; ++i) {
+  // for (size_t i = 0; i < numBodies * 3; ++i) {
   //   std::cout << vertexArray[i] << " , ";
   // }
   // std::cout << std::endl;
 }
 
 void NbodyEngine::calculateForcesWithDirectEuler() {
-  int numBodies = state.Bodies.size();
-
   for (int i = 0; i < numBodies; i++) {
     glm::dvec3 tmpAcc = {0, 0, 0};
     for (int j = 0; j < numBodies; j++) {

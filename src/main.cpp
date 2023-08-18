@@ -21,8 +21,8 @@ const double GRAVITY_CONSTANT = 6.6743e-11;
 int main() {
   EngineState initialState
       = {{Body(glm::dvec3(0, 0, 0), (0.5 / GRAVITY_CONSTANT), glm::dvec3(0, 0, 0)),
-          Body(glm::dvec3(-0.5, 0, 0), 0.0001, glm::dvec3(0, 1, 0))},
-         // Body(glm::dvec3(400, 0, 0), 0.0001, glm::dvec3(0, 1.4, 0))},
+          Body(glm::dvec3(-0.5, 0, 0), 0.0001, glm::dvec3(0, 1, 0)),
+          Body(glm::dvec3(0.9, 0, 0), 0.0001, glm::dvec3(0, 0.6, 0))},
          GRAVITY_CONSTANT,
          0.0005};
 

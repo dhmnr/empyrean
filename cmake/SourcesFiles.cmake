@@ -4,6 +4,7 @@ set(SOURCES
   src/engine/body.cpp
   src/engine/nbody_engine.cpp
   src/opengl/renderer.cpp
+  src/utils/fps_counter.cpp
   # src/engine/real_vector.cpp
 )
 

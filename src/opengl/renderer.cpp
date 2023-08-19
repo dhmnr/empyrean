@@ -1,6 +1,8 @@
 
 #include "empyrean/opengl/renderer.hpp"
 
+#include "empyrean/utils/fps_counter.hpp"
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
@@ -9,9 +11,7 @@ void GlRenderer::processInput() {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 }
 
-GlRenderer::GlRenderer(NbodyEngine* engine, const int width, const int height)
-    : engine(engine), width(width), height(height) {
-  objectcount = engine->numBodies;
+GlRenderer::GlRenderer(const int width, const int height) : width(width), height(height) {
   // glfw: initialize and configure
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -62,7 +62,7 @@ void GlRenderer::compileShaders() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << vertexShaderSource << std::endl;
   }
   // fragment shader
   GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -113,23 +113,18 @@ void GlRenderer::initVertexData() {
   glBindVertexArray(0);
 }
 
-void GlRenderer::mainLoop() {
+void GlRenderer::mainLoop(std::promise<float*>& promise) {
   double previousTime = glfwGetTime();
   int frameCount = 0;
 
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  float* vertexData = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+  float* vertexDataPtr = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+  promise.set_value(vertexDataPtr);
 
+  FpsCounter fpsCounter("OpenGL Renderer");
   while (!glfwWindowShouldClose(window)) {
-    double currentTime = glfwGetTime();
-    frameCount++;
-    if (currentTime - previousTime >= 1.0) {
-      std::cout << "FPS : " << frameCount << std::endl;
-
-      frameCount = 0;
-      previousTime = currentTime;
-    }
+    fpsCounter.displayFps();
     // input
     processInput();
     // render
@@ -137,21 +132,19 @@ void GlRenderer::mainLoop() {
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shaderProgram);
 
-    engine->updatePositions(vertexData);
     glDrawArrays(GL_POINTS, 0, objectcount);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
-
   glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
 void GlRenderer::setGlFlags() { glEnable(GL_VERTEX_PROGRAM_POINT_SIZE); }
 
-void GlRenderer::start() {
+void GlRenderer::start(std::promise<float*>& promise) {
   setGlFlags();
   compileShaders();
   initVertexData();
-  mainLoop();
+  mainLoop(promise);
 }

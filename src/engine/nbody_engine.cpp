@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "empyrean/engine/engine_state.hpp"
+#include "empyrean/utils/fps_counter.hpp"
 
 NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state) {
   // std::cout << state.bodies[0].position.x << state.bodies[0].position.y
@@ -24,18 +25,29 @@ NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state
   }
 }
 
+void NbodyEngine::start(float* vertexArray) {
+  FpsCounter fpsCounter("N-Body Engine");
+
+  while (true) {
+    fpsCounter.displayFps();
+    updatePositions(vertexArray);
+  }
+}
+
 void NbodyEngine::updatePositions(float* vertexArray) {
   calculateForces();
   writePositionsToVertexArray(vertexArray);
 }
 
 void NbodyEngine::writePositionsToVertexArray(float* vertexArray) {
-  for (size_t i = 0; i < numBodies; ++i) {
-    glm::dvec3 tmpVector = state.bodies[i].position;
-    // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
-    vertexArray[i * 3] = tmpVector.x;
-    vertexArray[(i * 3) + 1] = tmpVector.y;
-    vertexArray[(i * 3) + 2] = tmpVector.z;
+  if (vertexArray) {
+    for (size_t i = 0; i < numBodies; ++i) {
+      glm::dvec3 tmpVector = state.bodies[i].position;
+      // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
+      vertexArray[i * 3] = tmpVector.x;
+      vertexArray[(i * 3) + 1] = tmpVector.y;
+      vertexArray[(i * 3) + 2] = tmpVector.z;
+    }
   }
   // for (size_t i = 0; i < numBodies * 3; ++i) {
   //   std::cout << vertexArray[i] << " , ";

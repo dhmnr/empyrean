@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <future>
 
 #include "empyrean/engine/body.hpp"
 #include "empyrean/engine/engine_state.hpp"
@@ -17,4 +18,5 @@ public:
   void writePositionsToVertexArray(float* vertexArray);
   void updatePositions(float* vertexArray);
   void calculateForcesWithDirectEuler();
+  void start(float* vertexArray);
 };

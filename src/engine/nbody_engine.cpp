@@ -2,12 +2,15 @@
 
 #include <math.h>
 
+#include <condition_variable>
 #include <iostream>
 
 #include "empyrean/engine/engine_state.hpp"
+#include "empyrean/structs.hpp"
 #include "empyrean/utils/fps_counter.hpp"
 
-NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state) {
+NbodyEngine::NbodyEngine(EngineState state, SharedData& sharedData, int integrationMethod)
+    : state(state), sharedData(sharedData) {
   // std::cout << state.bodies[0].position.x << state.bodies[0].position.y
   //           << state.bodies[0].position.z << std::endl;
   numBodies = state.bodies.size();
@@ -25,30 +28,32 @@ NbodyEngine::NbodyEngine(EngineState state, int integrationMethod) : state(state
   }
 }
 
-void NbodyEngine::start(float* vertexArray) {
+void NbodyEngine::start() {
   FpsCounter fpsCounter("N-Body Engine");
-
-  while (true) {
+  {
+    std::unique_lock<std::mutex> lock(sharedData.get().mtx);
+    sharedData.get().cv.wait(lock);
+  }
+  while (!sharedData.get().stopRequested) {
     fpsCounter.displayFps();
-    updatePositions(vertexArray);
+    updatePositions();
   }
 }
 
-void NbodyEngine::updatePositions(float* vertexArray) {
+void NbodyEngine::updatePositions() {
   calculateForces();
-  writePositionsToVertexArray(vertexArray);
+  writePositionsToVertexArray();
 }
 
-void NbodyEngine::writePositionsToVertexArray(float* vertexArray) {
-  if (vertexArray) {
-    for (size_t i = 0; i < numBodies; ++i) {
-      glm::dvec3 tmpVector = state.bodies[i].position;
-      // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
-      vertexArray[i * 3] = tmpVector.x;
-      vertexArray[(i * 3) + 1] = tmpVector.y;
-      vertexArray[(i * 3) + 2] = tmpVector.z;
-    }
+void NbodyEngine::writePositionsToVertexArray() {
+  for (size_t i = 0; i < numBodies; ++i) {
+    glm::dvec3 tmpVector = state.bodies[i].position;
+    // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
+    sharedData.get().vertexDataPtr[i * 3] = tmpVector.x;
+    sharedData.get().vertexDataPtr[(i * 3) + 1] = tmpVector.y;
+    sharedData.get().vertexDataPtr[(i * 3) + 2] = tmpVector.z;
   }
+
   // for (size_t i = 0; i < numBodies * 3; ++i) {
   //   std::cout << vertexArray[i] << " , ";
   // }

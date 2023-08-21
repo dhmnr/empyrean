@@ -1,5 +1,6 @@
 set(SOURCES
   src/glad.c
+  src/handle_threads.cpp
   src/engine/common.cpp
   src/engine/body.cpp
   src/engine/nbody_engine.cpp

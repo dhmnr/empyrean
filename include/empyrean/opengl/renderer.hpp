@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <future>
 #include <iostream>
 // clang-format off
@@ -9,19 +10,21 @@
 #include <glm/glm.hpp>
 
 #include "empyrean/engine/nbody_engine.hpp"
+#include "empyrean/structs.hpp"
 
 class GlRenderer {
 public:
   GLFWwindow* window;
-  NbodyEngine* engine;
   GLuint VBO, VAO, shaderProgram;
-  int width, height, objectcount;
-  GlRenderer(const int width, const int height);
+  int width, height, numBodies;
+  std::reference_wrapper<SharedData> sharedData;
+  GlRenderer(std::string title, int width, int height, int numBodies,
+             std::reference_wrapper<SharedData> sharedData);
   ~GlRenderer();
   void compileShaders();
   void initVertexData();
   void processInput();
   void setGlFlags();
-  void mainLoop(std::promise<float*>& promise);
-  void start(std::promise<float*>& promise);
+  void mainLoop();
+  void start();
 };

@@ -1,6 +1,7 @@
 
 #include "empyrean/opengl/renderer.hpp"
 
+#include "empyrean/structs.hpp"
 #include "empyrean/utils/fps_counter.hpp"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -11,7 +12,9 @@ void GlRenderer::processInput() {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 }
 
-GlRenderer::GlRenderer(const int width, const int height) : width(width), height(height) {
+GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies,
+                       std::reference_wrapper<SharedData> sharedData)
+    : width(width), height(height), numBodies(numBodies), sharedData(sharedData) {
   // glfw: initialize and configure
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -19,7 +22,7 @@ GlRenderer::GlRenderer(const int width, const int height) : width(width), height
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // glfw: window creation
-  window = glfwCreateWindow(width, height, "EMPYREAN", NULL, NULL);
+  window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
   if (window == NULL) {
     std::cerr << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -97,7 +100,7 @@ GlRenderer::~GlRenderer() {
 }
 
 void GlRenderer::initVertexData() {
-  float vertices[3 * objectcount];
+  float vertices[3 * numBodies];
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
 
@@ -113,14 +116,19 @@ void GlRenderer::initVertexData() {
   glBindVertexArray(0);
 }
 
-void GlRenderer::mainLoop(std::promise<float*>& promise) {
+void GlRenderer::mainLoop() {
   double previousTime = glfwGetTime();
   int frameCount = 0;
 
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   float* vertexDataPtr = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
-  promise.set_value(vertexDataPtr);
+
+  {
+    std::lock_guard<std::mutex> lock(sharedData.get().mtx);
+    sharedData.get().vertexDataPtr = vertexDataPtr;  // Modify shared data safely
+    sharedData.get().cv.notify_one();
+  }
 
   FpsCounter fpsCounter("OpenGL Renderer");
   while (!glfwWindowShouldClose(window)) {
@@ -132,19 +140,20 @@ void GlRenderer::mainLoop(std::promise<float*>& promise) {
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shaderProgram);
 
-    glDrawArrays(GL_POINTS, 0, objectcount);
+    glDrawArrays(GL_POINTS, 0, numBodies);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
   glUnmapBuffer(GL_ARRAY_BUFFER);
+  sharedData.get().stopRequested = true;
 }
 
 void GlRenderer::setGlFlags() { glEnable(GL_VERTEX_PROGRAM_POINT_SIZE); }
 
-void GlRenderer::start(std::promise<float*>& promise) {
+void GlRenderer::start() {
   setGlFlags();
   compileShaders();
   initVertexData();
-  mainLoop(promise);
+  mainLoop();
 }

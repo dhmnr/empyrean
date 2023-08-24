@@ -24,6 +24,17 @@ include(${CPM_DOWNLOAD_LOCATION})
 # ---- Add dependencies via CPM ----
 # See https://github.com/TheLartians/CPM.cmake for details and examples
 
+# CPMAddPackage(
+#   GITHUB_REPOSITORY jarro2783/cxxopts
+#   VERSION 3.0.0
+#   OPTIONS "CXXOPTS_BUILD_EXAMPLES NO" "CXXOPTS_BUILD_TESTS NO" "CXXOPTS_ENABLE_INSTALL YES"
+# )
+
+# CPMAddPackage(
+#   GITHUB_REPOSITORY jbeder/yaml-cpp
+#   GIT_TAG 0.8.0
+# )
+
 find_package(OpenGL REQUIRED)
 
 find_package(glfw3 REQUIRED)
@@ -47,3 +58,5 @@ target_link_libraries(${PROJECT_NAME}
 )
 # setup your target's properties
 set_target_properties(Empyrean PROPERTIES CXX_STANDARD 17)
+
+#libcxxopts-dev libbyaml-cpp-dev libglm-dev libglfw3-dev

@@ -4,6 +4,17 @@
 #include "empyrean/structs.hpp"
 #include "empyrean/utils/fps_counter.hpp"
 
+float scaleFactor = 1.0;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  if (key == GLFW_KEY_Z && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+    scaleFactor *= 1.1;
+  }
+  if (key == GLFW_KEY_X && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+    scaleFactor *= 0.9;
+  }
+}
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
@@ -22,7 +33,7 @@ GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies,
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // glfw: window creation
-  window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+  window = glfwCreateWindow(width, height, title.c_str(), glfwGetPrimaryMonitor(), NULL);
   if (window == NULL) {
     std::cerr << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -30,6 +41,7 @@ GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies,
 
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+  glfwSetKeyCallback(window, key_callback);
   glfwSwapInterval(0);
 
   // glad: load all OpenGL function pointers
@@ -39,21 +51,12 @@ GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies,
 }
 
 void GlRenderer::compileShaders() {
-  const char* vertexShaderSource
-      = "#version 330 core\n"
-        "layout (location = 0) in vec3 inPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position =  vec4(inPos, 1.0);\n"
-        "   gl_PointSize = 2;\n"
-        "}\0";
-  const char* fragmentShaderSource
-      = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(0.9f, 0.9f, 0.0f, 1.0f);\n"
-        "}\n\0";
+  const char* vertexShaderSource =
+#include "vertex.shader"
+      ;
+  const char* fragmentShaderSource =
+#include "fragment.shader"
+      ;
   // build and compile shaders
   // vertex shader
   GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -139,7 +142,7 @@ void GlRenderer::mainLoop() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shaderProgram);
-
+    glUniform1f(glGetUniformLocation(shaderProgram, "scaleFactor"), scaleFactor);
     glDrawArrays(GL_POINTS, 0, numBodies);
 
     glfwSwapBuffers(window);

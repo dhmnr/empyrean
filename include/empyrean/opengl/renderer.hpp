@@ -18,8 +18,7 @@ public:
   GLuint VBO, VAO, shaderProgram;
   int width, height, numBodies;
   std::reference_wrapper<SharedData> sharedData;
-  GlRenderer(std::string title, int width, int height, int numBodies,
-             std::reference_wrapper<SharedData> sharedData);
+  GlRenderer(std::string title, int width, int height, int numBodies, SharedData& sharedData);
   ~GlRenderer();
   void compileShaders();
   void initVertexData();

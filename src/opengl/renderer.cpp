@@ -32,7 +32,7 @@ void GlRenderer::processInput() {
 }
 
 GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies,
-                       std::reference_wrapper<SharedData> sharedData)
+                       SharedData& sharedData)
     : width(width), height(height), numBodies(numBodies), sharedData(sharedData) {
   // glfw: initialize and configure
   glfwInit();

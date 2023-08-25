@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # ---- Project ----
 
-project(Empyrean LANGUAGES C CXX CUDA)
+project(empyrean LANGUAGES C CXX CUDA)
 
 enable_language(CUDA)
 
@@ -57,6 +57,6 @@ target_link_libraries(${PROJECT_NAME}
   glm::glm
 )
 # setup your target's properties
-set_target_properties(Empyrean PROPERTIES CXX_STANDARD 17)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
 #libcxxopts-dev libbyaml-cpp-dev libglm-dev libglfw3-dev

@@ -4,7 +4,9 @@
 #include "empyrean/structs.hpp"
 #include "empyrean/utils/fps_counter.hpp"
 
-float scaleFactor = 1.0;
+float scaleFactor = 1.0f;
+
+float timeScale = 1.0f;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (key == GLFW_KEY_Z && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
@@ -12,6 +14,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
   }
   if (key == GLFW_KEY_X && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
     scaleFactor *= 0.9;
+  }
+  if (key == GLFW_KEY_RIGHT_BRACKET && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+    timeScale *= 2;
+  }
+  if (key == GLFW_KEY_LEFT_BRACKET && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+    timeScale *= 0.5;
   }
 }
 

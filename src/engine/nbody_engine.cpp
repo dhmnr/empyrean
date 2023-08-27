@@ -6,10 +6,10 @@
 #include <iostream>
 
 #include "empyrean/engine/engine_state.hpp"
-#include "empyrean/structs.hpp"
 #include "empyrean/utils/fps_counter.hpp"
+#include "empyrean/utils/structs.hpp"
 
-NbodyEngine::NbodyEngine(EngineState state, SharedData& sharedData, int integrationMethod,
+NbodyEngine::NbodyEngine(InitialState state, SharedData& sharedData, int integrationMethod,
                          int computeType)
     : state(state), sharedData(sharedData) {
   // std::cout << state.bodies[0].position.x << state.bodies[0].position.y
@@ -54,9 +54,9 @@ void NbodyEngine::writePositionsToVertexArray() {
   for (size_t i = 0; i < numBodies; ++i) {
     glm::dvec3 tmpVector = state.bodies[i].position;
     // std::cout << tmpVector.x << tmpVector.y << tmpVector.z << std::endl;
-    sharedData.get().vertexDataPtr[i * 3] = tmpVector.x;
-    sharedData.get().vertexDataPtr[(i * 3) + 1] = tmpVector.y;
-    sharedData.get().vertexDataPtr[(i * 3) + 2] = tmpVector.z;
+    sharedData.get().hostPointer[i * 3] = tmpVector.x;
+    sharedData.get().hostPointer[(i * 3) + 1] = tmpVector.y;
+    sharedData.get().hostPointer[(i * 3) + 2] = tmpVector.z;
   }
 
   // for (size_t i = 0; i < numBodies * 3; ++i) {

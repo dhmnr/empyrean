@@ -5,7 +5,7 @@
 
 #include "empyrean/engine/body.hpp"
 #include "empyrean/engine/engine_state.hpp"
-#include "empyrean/structs.hpp"
+#include "empyrean/utils/structs.hpp"
 
 #define EULER 0
 #define VERLET 1
@@ -16,10 +16,10 @@
 class NbodyEngine {
 public:
   int numBodies;
-  EngineState state;
+  InitialState state;
   std::reference_wrapper<SharedData> sharedData;
   std::function<void()> calculateForces;
-  NbodyEngine(EngineState state, SharedData& sharedData, int integrationMethod = EULER,
+  NbodyEngine(InitialState state, SharedData& sharedData, int integrationMethod = EULER,
               int computeType = SERIAL);
   void writePositionsToVertexArray();
   void updatePositions();

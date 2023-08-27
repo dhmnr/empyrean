@@ -1,7 +1,7 @@
 
 #include "empyrean/opengl/renderer.hpp"
 
-#include "empyrean/structs.hpp"
+#include "empyrean/utils/structs.hpp"
 #include "empyrean/utils/fps_counter.hpp"
 
 float scaleFactor = 1.0f;
@@ -133,11 +133,11 @@ void GlRenderer::mainLoop() {
 
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  float* vertexDataPtr = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+  float* hostPointer = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 
   {
     std::lock_guard<std::mutex> lock(sharedData.get().mtx);
-    sharedData.get().vertexDataPtr = vertexDataPtr;  // Modify shared data safely
+    sharedData.get().hostPointer = hostPointer;  // Modify shared data safely
     sharedData.get().cv.notify_one();
   }
 

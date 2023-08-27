@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 
 #include "empyrean/engine/nbody_engine.hpp"
-#include "empyrean/structs.hpp"
+#include "empyrean/utils/structs.hpp"
 
 class GlRenderer {
 public:

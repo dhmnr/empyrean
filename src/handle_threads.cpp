@@ -46,6 +46,7 @@ void startAll(std::map<std::string, std::string> stringOpts) {
           Body(glm::dvec3(0, -1300, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0.8, 0, 0)),
           Body(glm::dvec3(0, 1600, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(-0.5, 0, 0)),
           Body(glm::dvec3(0, -1900, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0.3, 0, 0))},
+         22,
          GRAVITY_CONSTANT,
          5e-3};
 
@@ -53,6 +54,5 @@ void startAll(std::map<std::string, std::string> stringOpts) {
                            std::stoi(stringOpts["enableGpu"]));
   engineThread.detach();
 
-  startRenderer(stringOpts["wndTitle"], width, height, initialState.bodies.size(),
-                std::ref(sharedData));
+  startRenderer(stringOpts["wndTitle"], width, height, initialState.objCount, std::ref(sharedData));
 }

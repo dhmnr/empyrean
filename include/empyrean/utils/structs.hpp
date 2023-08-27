@@ -13,6 +13,7 @@ struct SharedData {
 
 struct InitialState {
   std::vector<Body> bodies;
+  size_t objCount;
   double gravityConstant;
   double timeStep;
 };

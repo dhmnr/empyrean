@@ -1,8 +1,11 @@
 
 #include "empyrean/opengl/renderer.hpp"
 
-#include "empyrean/utils/structs.hpp"
+// #include <cuda_gl_interop.h>
+// #include <cuda_runtime_api.h>
+
 #include "empyrean/utils/fps_counter.hpp"
+#include "empyrean/utils/structs.hpp"
 
 float scaleFactor = 1.0f;
 
@@ -134,6 +137,17 @@ void GlRenderer::mainLoop() {
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   float* hostPointer = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+
+  // cudaGraphicsResource_t cudaResource;
+  // cudaGraphicsGLRegisterBuffer(&cudaResource, VBO, cudaGraphicsMapFlagsNone);
+
+  // // Map the CUDA graphics resource
+  // cudaGraphicsMapResources(1, &cudaResource);
+
+  // // Get the device pointer
+  // void* devicePointer;
+  // size_t size;
+  // cudaGraphicsResourceGetMappedPointer(&devicePointer, &size, cudaResource);
 
   {
     std::lock_guard<std::mutex> lock(sharedData.get().mtx);

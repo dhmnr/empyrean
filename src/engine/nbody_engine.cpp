@@ -18,9 +18,9 @@ NbodyEngine::NbodyEngine(EngineState state, SharedData& sharedData, int integrat
   switch (integrationMethod) {
     case EULER:
       if (computeType) {
-        this->calculateForces = std::bind(&NbodyEngine::calculateForces_Euler_Serial, this);
-      } else {
         this->calculateForces = std::bind(&NbodyEngine::calculateForces_Euler_Parallel, this);
+      } else {
+        this->calculateForces = std::bind(&NbodyEngine::calculateForces_Euler_Serial, this);
       }
       break;
 
@@ -82,29 +82,6 @@ void NbodyEngine::calculateForces_Euler_Serial() {
     state.bodies[i].velocity += state.bodies[i].acceleration * state.timeStep;
     state.bodies[i].position += state.bodies[i].velocity * state.timeStep;
 
-    // std::cout << "Body " << i << " | vel " << glm::length(state.bodies[i].velocity) << "| acc "
-    //           << glm::length(state.bodies[i].acceleration) << "| pos " <<
-    //           state.bodies[i].position.x
-    //           << ", " << state.bodies[i].position.y << ", " << state.bodies[i].position.z
-    //           << std::endl;
-  }
-}
-
-void NbodyEngine::calculateForces_Euler_Parallel() {
-  for (int i = 0; i < numBodies; i++) {
-    glm::dvec3 tmpAcc = {0, 0, 0};
-    for (int j = 0; j < numBodies; j++) {
-      if (i != j) {
-        glm::dvec3 distanceVector = state.bodies[j].position - state.bodies[i].position;
-        tmpAcc += distanceVector
-                  * ((state.gravityConstant * state.bodies[j].mass)
-                     / pow(glm::length(distanceVector), 3));
-        // std::cout << distanceVector.GetMagnitude() << std::endl;
-      }
-    }
-    state.bodies[i].acceleration = tmpAcc;
-    state.bodies[i].velocity += state.bodies[i].acceleration * state.timeStep;
-    state.bodies[i].position += state.bodies[i].velocity * state.timeStep;
     // std::cout << "Body " << i << " | vel " << glm::length(state.bodies[i].velocity) << "| acc "
     //           << glm::length(state.bodies[i].acceleration) << "| pos " <<
     //           state.bodies[i].position.x

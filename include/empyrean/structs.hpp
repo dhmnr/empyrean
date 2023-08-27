@@ -3,7 +3,8 @@
 struct SharedData {
   std::mutex mtx;
   std::condition_variable cv;
-  int objectCount;
-  float* vertexDataPtr;
+  size_t objCount;
+  float* hostPointer;
+  void* devicePointer;
   bool stopRequested = false;
 };

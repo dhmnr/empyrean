@@ -59,4 +59,5 @@ target_link_libraries(${PROJECT_NAME}
 # setup your target's properties
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
+set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_ARCHITECTURES "60;61")
 #libcxxopts-dev libbyaml-cpp-dev libglm-dev libglfw3-dev

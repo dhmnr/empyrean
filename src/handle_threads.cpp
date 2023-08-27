@@ -7,7 +7,7 @@
 const double GRAVITY_CONSTANT = 6.6743e-11;
 
 void startEngine(EngineState initialState, std::reference_wrapper<SharedData> sharedData) {
-  NbodyEngine engine(initialState, sharedData, EULER);
+  NbodyEngine engine(initialState, sharedData, EULER, PARALLEL);
   engine.start();
 }
 
@@ -46,7 +46,7 @@ void startAll(std::map<std::string, std::string> startOpts) {
           Body(glm::dvec3(0, 1600, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(-0.5, 0, 0)),
           Body(glm::dvec3(0, -1900, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0.3, 0, 0))},
          GRAVITY_CONSTANT,
-         5e-3};
+         1e-2};
 
   std::thread engineThread(startEngine, initialState, std::ref(sharedData));
   engineThread.detach();

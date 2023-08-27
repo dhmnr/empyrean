@@ -90,8 +90,8 @@ void NbodyEngine::updatePositions() {
     calculateForces_Euler_Parallel();
   } else {
     calculateForces_Euler_Serial();
+    writeToHostArray();
   }
-  writeToHostArray();
 }
 
 void NbodyEngine::writeToHostArray() {

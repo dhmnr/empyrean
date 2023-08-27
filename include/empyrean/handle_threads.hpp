@@ -14,6 +14,6 @@ void startEngine(InitialState initialState, std::reference_wrapper<SharedData> s
                  int enableGpu);
 
 void startRenderer(std::string title, int width, int height, int numBodies,
-                   std::reference_wrapper<SharedData> sharedData);
+                   std::reference_wrapper<SharedData> sharedData, int useGpu);
 
 void startAll(std::map<std::string, std::string> stringOpts);

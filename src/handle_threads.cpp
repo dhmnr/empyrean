@@ -13,8 +13,8 @@ void startEngine(InitialState initialState, std::reference_wrapper<SharedData> s
 }
 
 void startRenderer(std::string title, int width, int height, int numBodies,
-                   std::reference_wrapper<SharedData> sharedData) {
-  GlRenderer renderer(title, width, height, numBodies, sharedData);
+                   std::reference_wrapper<SharedData> sharedData, int useGpu) {
+  GlRenderer renderer(title, width, height, numBodies, useGpu, sharedData);
   renderer.start();
 }
 
@@ -54,5 +54,6 @@ void startAll(std::map<std::string, std::string> stringOpts) {
                            std::stoi(stringOpts["enableGpu"]));
   engineThread.detach();
 
-  startRenderer(stringOpts["wndTitle"], width, height, initialState.objCount, std::ref(sharedData));
+  startRenderer(stringOpts["wndTitle"], width, height, initialState.objCount, std::ref(sharedData),
+                std::stoi(stringOpts["enableGpu"]));
 }

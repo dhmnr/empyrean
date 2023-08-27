@@ -8,7 +8,7 @@
 
 __global__ void calculateForcesEuler(glm::dvec3 *position, glm::dvec3 *acceleration,
                                      glm::dvec3 *velocity, double *mass, double gravityConstant,
-                                     double timeStep, int numBodies) {
+                                     double timeStep, int numBodies, float *devicePointer) {
   int idx = threadIdx.x + blockDim.x * blockIdx.x;
 
   if (idx < numBodies) {
@@ -23,6 +23,10 @@ __global__ void calculateForcesEuler(glm::dvec3 *position, glm::dvec3 *accelerat
     acceleration[idx] = tmpAcc;
     velocity[idx] += acceleration[idx] * timeStep;
     position[idx] += velocity[idx] * timeStep;
+
+    devicePointer[idx * 3] = position[idx].x;
+    devicePointer[(idx * 3) + 1] = position[idx].y;
+    devicePointer[(idx * 3) + 2] = position[idx].z;
   }
 }
 
@@ -60,20 +64,20 @@ void NbodyEngine::calculateForces_Euler_Parallel() {
   gridSize = (int)ceil((float)state.objCount / blockSize);
 
   // Execute the kernel
-  calculateForcesEuler<<<gridSize, blockSize>>>(position_d, acceleration_d, velocity_d, mass_d,
-                                                state.gravityConstant, state.timeStep,
-                                                state.objCount);
+  calculateForcesEuler<<<gridSize, blockSize>>>(
+      position_d, acceleration_d, velocity_d, mass_d, state.gravityConstant, state.timeStep,
+      state.objCount, (float *)sharedData.get().devicePointer);
 
   // Copy array back to host
-  cudaMemcpy(position_h, position_d, dvecBytes, cudaMemcpyDeviceToHost);
-  cudaMemcpy(acceleration_h, acceleration_d, dvecBytes, cudaMemcpyDeviceToHost);
-  cudaMemcpy(velocity_h, velocity_d, dvecBytes, cudaMemcpyDeviceToHost);
-  // cudaMemcpy(mass_d, mass_h, bytes, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(position_h, position_d, dvecBytes, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(acceleration_h, acceleration_d, dvecBytes, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(velocity_h, velocity_d, dvecBytes, cudaMemcpyDeviceToHost);
+  // // cudaMemcpy(mass_d, mass_h, bytes, cudaMemcpyDeviceToHost);
 
-  for (int i = 0; i < state.objCount; i++) {
-    state.bodies[i].position = position_h[i];
-    state.bodies[i].acceleration = acceleration_h[i];
-    state.bodies[i].velocity = velocity_h[i];
-    // state.bodies[i].mass = mass_h[i];
-  }
+  // for (int i = 0; i < state.objCount; i++) {
+  //   state.bodies[i].position = position_h[i];
+  //   state.bodies[i].acceleration = acceleration_h[i];
+  //   state.bodies[i].velocity = velocity_h[i];
+  //   // state.bodies[i].mass = mass_h[i];
+  // }
 }

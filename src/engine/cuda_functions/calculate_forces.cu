@@ -3,81 +3,82 @@
 #include <cuda_runtime.h>
 
 #include <glm/glm.hpp>
+#include <iostream>
 
 #include "empyrean/engine/nbody_engine.hpp"
 
-__global__ void calculateForcesEuler(glm::dvec3 *position, glm::dvec3 *acceleration,
-                                     glm::dvec3 *velocity, double *mass, double gravityConstant,
-                                     double timeStep, int numBodies, float *devicePointer) {
+__global__ void calculatePositions(glm::dvec3 *position, glm::dvec3 *velocity, float *devicePointer,
+                                   double timeStep, int numBodies) {
   int idx = threadIdx.x + blockDim.x * blockIdx.x;
 
   if (idx < numBodies) {
-    glm::dvec3 tmpAcc = {0, 0, 0};
-    for (int i = 0; i < numBodies; i++) {
-      if (i != idx) {
-        glm::dvec3 distanceVector = position[i] - position[idx];
-        tmpAcc
-            += distanceVector * ((gravityConstant * mass[i]) / pow(glm::length(distanceVector), 3));
-      }
-    }
-    acceleration[idx] = tmpAcc;
-    velocity[idx] += acceleration[idx] * timeStep;
     position[idx] += velocity[idx] * timeStep;
-
+    // printf("%f\n", (float)glm::length(position[idx]));
     devicePointer[idx * 3] = position[idx].x;
     devicePointer[(idx * 3) + 1] = position[idx].y;
     devicePointer[(idx * 3) + 2] = position[idx].z;
+    printf("%f %f %f\n", devicePointer[idx * 3], devicePointer[(idx * 3) + 1],
+           devicePointer[(idx * 3) + 2]);
+  }
+}
+
+__global__ void calculateVelocity(glm::dvec3 *acceleration, glm::dvec3 *velocity, int numBodies,
+                                  double timeStep) {
+  int idx = threadIdx.x + blockDim.x * blockIdx.x;
+
+  if (idx < numBodies) {
+    glm::dvec3 tmp(0, 0, 0);
+    for (int i = 0; i < numBodies; i++) {
+      // printf("%f\n", (float)glm::length(acceleration[(idx * numBodies) + i]));
+
+      tmp += acceleration[(idx * numBodies) + i] * timeStep;
+    }
+    velocity[idx] += tmp;
+    // printf("%f\n", (float)glm::length(tmp));
+  }
+}
+
+__global__ void calculateForces(glm::dvec3 *position, glm::dvec3 *acceleration, double *mass,
+                                double gravConst, int numBodies) {  //
+  int idx = threadIdx.x + blockDim.x * blockIdx.x;
+  int idy = threadIdx.y + blockDim.y * blockIdx.y;
+  int stride = blockDim.x * gridDim.x;
+  if (idx < numBodies && idy < numBodies) {
+    if (idx != idy) {
+      glm::dvec3 dist = position[idy] - position[idx];
+      acceleration[idx * stride + idy]
+          = dist * ((gravConst * mass[idx]) / pow(glm::length(dist), 3));
+    }
   }
 }
 
 void NbodyEngine::initDeviceArrays() {
   cudaMalloc(&position_d, dvecBytes);
-  cudaMalloc(&acceleration_d, dvecBytes);
+  cudaMalloc(&acceleration_d, state.objCount * dvecBytes);
   cudaMalloc(&velocity_d, dvecBytes);
   cudaMalloc(&mass_d, dBytes);
 
   cudaMemcpy(position_d, position_h, dvecBytes, cudaMemcpyHostToDevice);
-  cudaMemcpy(acceleration_d, acceleration_h, dvecBytes, cudaMemcpyHostToDevice);
+  cudaMemcpy(acceleration_d, acceleration_h, state.objCount * dvecBytes, cudaMemcpyHostToDevice);
   cudaMemcpy(velocity_d, velocity_h, dvecBytes, cudaMemcpyHostToDevice);
   cudaMemcpy(mass_d, mass_h, dBytes, cudaMemcpyHostToDevice);
 }
 
 void NbodyEngine::calculateForces_Euler_Parallel() {
-  // Host vectors
+  int threadlen = 16;
+  dim3 blockSize(threadlen, threadlen);
 
-  // Device input vectors
-
-  // Size, in bytes, of each vector
-
-  // Allocate memory for each vector on GPU
-
-  // Initialize vectors on host
-
-  // Copy host vectors to device
-
-  int blockSize, gridSize;
-
-  // Number of threads in each thread block
-  blockSize = 1024;
-
-  // Number of thread blocks in grid
-  gridSize = (int)ceil((float)state.objCount / blockSize);
+  int blocklen = (int)ceil((float)state.objCount / threadlen);
+  dim3 gridSize(blocklen, blocklen);
+  // std::cout << threadlen << blocklen << std::endl;
+  int numBodies = state.objCount;
+  // float *devicePtr = ;
 
   // Execute the kernel
-  calculateForcesEuler<<<gridSize, blockSize>>>(
-      position_d, acceleration_d, velocity_d, mass_d, state.gravityConstant, state.timeStep,
-      state.objCount, (float *)sharedData.get().devicePointer);
-
-  // Copy array back to host
-  // cudaMemcpy(position_h, position_d, dvecBytes, cudaMemcpyDeviceToHost);
-  // cudaMemcpy(acceleration_h, acceleration_d, dvecBytes, cudaMemcpyDeviceToHost);
-  // cudaMemcpy(velocity_h, velocity_d, dvecBytes, cudaMemcpyDeviceToHost);
-  // // cudaMemcpy(mass_d, mass_h, bytes, cudaMemcpyDeviceToHost);
-
-  // for (int i = 0; i < state.objCount; i++) {
-  //   state.bodies[i].position = position_h[i];
-  //   state.bodies[i].acceleration = acceleration_h[i];
-  //   state.bodies[i].velocity = velocity_h[i];
-  //   // state.bodies[i].mass = mass_h[i];
-  // }
+  calculateForces<<<gridSize, blockSize>>>(position_d, acceleration_d, mass_d,
+                                           state.gravityConstant, numBodies);
+  calculateVelocity<<<blocklen * blocklen, threadlen * threadlen>>>(acceleration_d, velocity_d,
+                                                                    numBodies, state.timeStep);
+  calculatePositions<<<blocklen, threadlen>>>(
+      position_d, velocity_d, (float *)sharedData.get().devicePointer, state.timeStep, numBodies);
 }

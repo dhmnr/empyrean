@@ -145,7 +145,7 @@ void GlRenderer::mainLoop() {
   }
   // Map the CUDA graphics resource
   cudaGraphicsMapResources(1, &cudaResource);
-  size_t size = numBodies;
+  size_t size = numBodies * 3;
   // float* hostPointer = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 
   {
@@ -169,8 +169,9 @@ void GlRenderer::mainLoop() {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+    // break;
   }
-  glUnmapBuffer(GL_ARRAY_BUFFER);
+  // glUnmapBuffer(GL_ARRAY_BUFFER);
   sharedData.get().stopRequested = true;
   cudaGraphicsUnmapResources(1, &cudaResource);
   cudaGraphicsUnregisterResource(cudaResource);

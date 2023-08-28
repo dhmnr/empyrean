@@ -82,6 +82,7 @@ void NbodyEngine::start() {
   while (!sharedData.get().stopRequested) {
     fpsCounter.displayFps();
     updatePositions();
+    // sharedData.get().stopRequested = true;
   }
 }
 

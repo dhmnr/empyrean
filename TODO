@@ -1,42 +1,22 @@
-**1. Simulation Core:
-The core of your N-Body simulator handles the physics calculations and simulation loop.
+# Simulation Core
+The core of empyrean, handles the physics calculations and simulation loop.
+ - [ ]  Add support for more integretors (Verlet, Runge-Kutta IV, etc)
+ - [ ]  Optimize reduction in CUDA kernels ([Ref](https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf))
+ - [ ]  Add [Barns-Hut](http://arborjs.org/docs/barnes-hut) approximation algorithm 
+ - [ ]  Implement SI units and prefixes and scale units automatically
 
-    Particle Representation: Define a particle structure to store properties like position, velocity, mass, and possibly other attributes.
-    Physics Calculations: Implement the gravitational calculations between particles to update their positions and velocities over time.
-    Time Integration: Use numerical integration methods like the Euler method or Verlet integration to update particle positions and velocities.
-    Simulation Loop: Set up a loop that iterates over time steps and updates particle states based on physics calculations.
 
-**2. Rendering and Visualization:
+# Rendering and Visualization
 The rendering component handles the visualization of the particles and the simulation.
+ - [ ] Render anti-aliased circular points
+ - [ ] Add more camera controls
+ - [ ] Support pause/resume and controlling simulation speed 
+ - [ ] Support Vulkan
+ - [ ] Display FPS and other details on window
+ - [ ] Provide a user interface, before rendering to control simulation parameters
+ - [ ] Motion blur for fast moving points
 
-    Graphics Library: Choose a graphics library like OpenGL to render the particles and display the simulation.
-    Particle Rendering: Create a visualization mechanism to render particles as points, spheres, or other representations based on their properties.
-    Camera Controls: Implement camera controls to allow users to navigate and observe the simulation from different angles.
-    Interaction: Optionally, allow user interaction to pause, resume, or manipulate simulation parameters in real-time.
 
-**3. Multithreading (Optional):
-To achieve better performance, you can consider multithreading the simulation and rendering components.
-
-    Simulation Thread: Run the physics calculations and time integration in a separate thread to improve simulation performance.
-    Rendering Thread: Keep the rendering and visualization in another thread to avoid blocking the simulation updates.
-
-**4. Memory Management:
-Carefully manage memory to avoid memory leaks and optimize performance.
-
-    Memory Pools: Use memory pools for particle structures to improve memory allocation efficiency.
-    Resource Management: Properly handle resource allocation and deallocation in your graphics library to prevent memory leaks.
-
-**5. User Interface (Optional):
-If you intend to provide a user interface, you can integrate it to control simulation parameters and provide information.
-
-    GUI Library: Choose a GUI library to create sliders, buttons, and other UI elements.
-    Simulation Controls: Enable users to control simulation parameters such as time step, particle count, or gravitational constant.
-
-**6. Configuration and Settings:
-Consider implementing a configuration system to allow users to customize simulation parameters without modifying the source code.
-
-**7. Error Handling and Debugging:
-Implement error handling mechanisms and debugging tools to identify and resolve issues during simulation and rendering.
-
-**8. Documentation:
-Provide clear documentation explaining how to use your simulator, the physics involved, and any customization options.
+# Common
+ - [ ] Add documentation
+  

@@ -45,8 +45,9 @@ __global__ void calculateForces(glm::dvec3 *position, glm::dvec3 *acceleration, 
   if (idx < numBodies && idy < numBodies) {
     if (idx != idy) {
       glm::dvec3 dist = position[idy] - position[idx];
+      double dist_mag = glm::length(dist);
       acceleration[idx * numBodies + idy]
-          = dist * ((gravConst * mass[idy]) / pow(glm::length(dist), 3));
+          = dist * ((gravConst * mass[idy]) / (dist_mag * dist_mag * dist_mag));
     }
     // printf("%d\n", idx * numBodies + idy);
   }

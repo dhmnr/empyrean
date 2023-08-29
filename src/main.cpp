@@ -19,9 +19,9 @@ int main(int argc, char** argv) {
 
   // clang-format off
   options.add_options()
-    ("x,width", "Window Width", cxxopts::value<std::string>()->default_value("800"))
-    ("y,height", "Window Height", cxxopts::value<std::string>()->default_value("800"))
-    ("g,enable-gpu", "Use GPU", cxxopts::value<std::string>()->default_value("1")) // CPU compute is broken due to thread sync issues
+    ("x,width", "Window Width", cxxopts::value<std::string>()->default_value("1920"))
+    ("y,height", "Window Height", cxxopts::value<std::string>()->default_value("1080"))
+    ("g,enable-gpu", "Use GPU", cxxopts::value<std::string>()->default_value("1")) // CPU compute is broken due to thread sync issue, use only GPU
     ("f,file", "Input file", cxxopts::value<std::string>()->default_value("input.yaml"))
     ("h,help", "Print usage");
   // clang-format on

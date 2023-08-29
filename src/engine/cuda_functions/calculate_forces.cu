@@ -17,8 +17,6 @@ __global__ void calculatePositions(glm::dvec3 *position, glm::dvec3 *velocity, f
     devicePointer[idx * 3] = position[idx].x;
     devicePointer[(idx * 3) + 1] = position[idx].y;
     devicePointer[(idx * 3) + 2] = position[idx].z;
-    printf("%f %f %f\n", devicePointer[idx * 3], devicePointer[(idx * 3) + 1],
-           devicePointer[(idx * 3) + 2]);
   }
 }
 
@@ -33,6 +31,8 @@ __global__ void calculateVelocity(glm::dvec3 *acceleration, glm::dvec3 *velocity
 
       tmp += acceleration[(idx * numBodies) + i] * timeStep;
     }
+    // printf("%f %f %f\n", tmp.x, tmp.y, tmp.z);
+
     velocity[idx] += tmp;
     // printf("%f\n", (float)glm::length(tmp));
   }
@@ -42,13 +42,13 @@ __global__ void calculateForces(glm::dvec3 *position, glm::dvec3 *acceleration, 
                                 double gravConst, int numBodies) {  //
   int idx = threadIdx.x + blockDim.x * blockIdx.x;
   int idy = threadIdx.y + blockDim.y * blockIdx.y;
-  int stride = blockDim.x * gridDim.x;
   if (idx < numBodies && idy < numBodies) {
     if (idx != idy) {
       glm::dvec3 dist = position[idy] - position[idx];
-      acceleration[idx * stride + idy]
-          = dist * ((gravConst * mass[idx]) / pow(glm::length(dist), 3));
+      acceleration[idx * numBodies + idy]
+          = dist * ((gravConst * mass[idy]) / pow(glm::length(dist), 3));
     }
+    // printf("%d\n", idx * numBodies + idy);
   }
 }
 
@@ -59,7 +59,7 @@ void NbodyEngine::initDeviceArrays() {
   cudaMalloc(&mass_d, dBytes);
 
   cudaMemcpy(position_d, position_h, dvecBytes, cudaMemcpyHostToDevice);
-  cudaMemcpy(acceleration_d, acceleration_h, state.objCount * dvecBytes, cudaMemcpyHostToDevice);
+  // cudaMemcpy(acceleration_d, acceleration_h, state.objCount * dvecBytes, cudaMemcpyHostToDevice);
   cudaMemcpy(velocity_d, velocity_h, dvecBytes, cudaMemcpyHostToDevice);
   cudaMemcpy(mass_d, mass_h, dBytes, cudaMemcpyHostToDevice);
 }
@@ -77,8 +77,7 @@ void NbodyEngine::calculateForces_Euler_Parallel() {
   // Execute the kernel
   calculateForces<<<gridSize, blockSize>>>(position_d, acceleration_d, mass_d,
                                            state.gravityConstant, numBodies);
-  calculateVelocity<<<blocklen * blocklen, threadlen * threadlen>>>(acceleration_d, velocity_d,
-                                                                    numBodies, state.timeStep);
+  calculateVelocity<<<blocklen, threadlen>>>(acceleration_d, velocity_d, numBodies, state.timeStep);
   calculatePositions<<<blocklen, threadlen>>>(
       position_d, velocity_d, (float *)sharedData.get().devicePointer, state.timeStep, numBodies);
 }

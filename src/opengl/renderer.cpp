@@ -169,7 +169,6 @@ void GlRenderer::mainLoop() {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
-    // break;
   }
   // glUnmapBuffer(GL_ARRAY_BUFFER);
   sharedData.get().stopRequested = true;

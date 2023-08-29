@@ -7,9 +7,9 @@
 #include <iostream>
 
 #include "empyrean/engine/engine_state.hpp"
-#include "empyrean/utils/fps_counter.hpp"
 #include "empyrean/structs/initial_state.hpp"
 #include "empyrean/structs/shared_data.hpp"
+#include "empyrean/utils/fps_counter.hpp"
 
 NbodyEngine::NbodyEngine(InitialState state, SharedData &sharedData, int integrationMethod,
                          int useGpu)
@@ -44,6 +44,7 @@ NbodyEngine::NbodyEngine(InitialState state, SharedData &sharedData, int integra
     initDeviceArrays();
 
   } else {
+    this->sharedData.get().hostPointer = (float *)malloc(3 * state.objCount * sizeof(float));
   }
 
   // switch (integrationMethod) {
@@ -101,9 +102,6 @@ void NbodyEngine::writeToHostArray() {
     sharedData.get().hostPointer[i * 3] = position_h[i].x;
     sharedData.get().hostPointer[(i * 3) + 1] = position_h[i].y;
     sharedData.get().hostPointer[(i * 3) + 2] = position_h[i].z;
-    // std::cout << sharedData.get().hostPointer[i * 3] << "|"
-    //           << sharedData.get().hostPointer[(i * 3) + 1] << "|"
-    //           << sharedData.get().hostPointer[(i * 3) + 2] << std::endl;
   }
 }
 

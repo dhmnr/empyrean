@@ -8,7 +8,7 @@
 #include "empyrean/structs/shared_data.hpp"
 #include "empyrean/utils/fps_counter.hpp"
 
-double scaleFactor = 1.0f;
+float scaleFactor = 1.0f;
 
 float timeScale = 1.0f;
 
@@ -175,7 +175,7 @@ void GlRenderer::mainLoop() {
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shaderProgram);
     glUniform1f(glGetUniformLocation(shaderProgram, "scaleFactor"),
-                sharedData.get().scaleFactor * scaleFactor);
+                (float)sharedData.get().scaleFactor * scaleFactor);
     glDrawArrays(GL_POINTS, 0, numBodies);
     if (!useGpu) {
       glBufferData(GL_ARRAY_BUFFER, numBodies * 3 * sizeof(float), sharedData.get().hostPointer,

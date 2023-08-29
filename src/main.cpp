@@ -10,6 +10,7 @@
 #include "empyrean/engine/engine_state.hpp"
 #include "empyrean/engine/nbody_engine.hpp"
 #include "empyrean/handle_threads.hpp"
+#include "empyrean/input/input_parser.hpp"
 #include "empyrean/opengl/renderer.hpp"
 
 int main(int argc, char** argv) {
@@ -36,9 +37,7 @@ int main(int argc, char** argv) {
   stringOpts["wndHeight"] = result["height"].as<std::string>();
   stringOpts["wndTitle"] = "EMPYREAN";
   stringOpts["enableGpu"] = result["enable-gpu"].as<std::string>();
-  // stringOpts["wndWidth"] = "800";
-  // stringOpts["wndHeight"] = "800";
 
-  startAll(stringOpts);
+  startAll(parseInputYaml(result["file"].as<std::string>()), stringOpts);
   return 0;
 }

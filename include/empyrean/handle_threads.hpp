@@ -16,4 +16,4 @@ void startEngine(InitialState initialState, std::reference_wrapper<SharedData> s
 void startRenderer(std::string title, int width, int height, int numBodies,
                    std::reference_wrapper<SharedData> sharedData, int useGpu);
 
-void startAll(std::map<std::string, std::string> stringOpts);
+void startAll(InitialState initialState, std::map<std::string, std::string> stringOpts);

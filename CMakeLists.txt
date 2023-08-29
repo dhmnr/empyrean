@@ -42,6 +42,9 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
 find_package(CUDAToolkit REQUIRED)
+
+find_package(yaml-cpp REQUIRED)
+
 # ---- Create executable ----
 include(cmake/SourcesFiles.cmake)
 # add your source files here
@@ -55,6 +58,7 @@ target_link_libraries(${PROJECT_NAME}
   OpenGL::GL
   glfw
   glm::glm
+  yaml-cpp
 )
 # setup your target's properties
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)

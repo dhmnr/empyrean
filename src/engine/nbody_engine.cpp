@@ -8,7 +8,8 @@
 
 #include "empyrean/engine/engine_state.hpp"
 #include "empyrean/utils/fps_counter.hpp"
-#include "empyrean/utils/structs.hpp"
+#include "empyrean/structs/initial_state.hpp"
+#include "empyrean/structs/shared_data.hpp"
 
 NbodyEngine::NbodyEngine(InitialState state, SharedData &sharedData, int integrationMethod,
                          int useGpu)

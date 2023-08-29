@@ -5,7 +5,8 @@
 
 #include "empyrean/engine/body.hpp"
 #include "empyrean/engine/engine_state.hpp"
-#include "empyrean/utils/structs.hpp"
+#include "empyrean/structs/initial_state.hpp"
+#include "empyrean/structs/shared_data.hpp"
 
 #define EULER 0
 #define VERLET 1

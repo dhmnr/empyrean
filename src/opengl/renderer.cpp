@@ -4,10 +4,11 @@
 #include <cuda_gl_interop.h>
 #include <cuda_runtime_api.h>
 
+#include "empyrean/structs/initial_state.hpp"
+#include "empyrean/structs/shared_data.hpp"
 #include "empyrean/utils/fps_counter.hpp"
-#include "empyrean/utils/structs.hpp"
 
-float scaleFactor = 1.0f;
+double scaleFactor = 1.0f;
 
 float timeScale = 1.0f;
 
@@ -173,7 +174,8 @@ void GlRenderer::mainLoop() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shaderProgram);
-    glUniform1f(glGetUniformLocation(shaderProgram, "scaleFactor"), scaleFactor);
+    glUniform1f(glGetUniformLocation(shaderProgram, "scaleFactor"),
+                sharedData.get().scaleFactor * scaleFactor);
     glDrawArrays(GL_POINTS, 0, numBodies);
     if (!useGpu) {
       glBufferData(GL_ARRAY_BUFFER, numBodies * 3 * sizeof(float), sharedData.get().hostPointer,

@@ -1,0 +1,21 @@
+---
+# units:
+#   time: s
+#   mass: kg
+#   distance: m
+#   velocity: mps
+
+global:
+  scale-factor: 2e8
+  time-step: 1e2
+
+objects:
+  static:
+    - sun:
+        mass: 1.98e30
+        position: [0,0,0]
+        velocity: [0,0,0]
+    - earth:
+        mass: 5.97e24
+        position: [0,1.52e11,0]
+        velocity: [29.29e3,0,0]

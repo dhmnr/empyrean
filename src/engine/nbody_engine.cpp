@@ -100,12 +100,10 @@ void NbodyEngine::writeToHostArray() {
     sharedData.get().hostPointer[i * 3] = position_h[i].x;
     sharedData.get().hostPointer[(i * 3) + 1] = position_h[i].y;
     sharedData.get().hostPointer[(i * 3) + 2] = position_h[i].z;
+    // std::cout << sharedData.get().hostPointer[i * 3] << "|"
+    //           << sharedData.get().hostPointer[(i * 3) + 1] << "|"
+    //           << sharedData.get().hostPointer[(i * 3) + 2] << std::endl;
   }
-
-  // for (size_t i = 0; i < state.objCount * 3; ++i) {
-  //   std::cout << vertexArray[i] << " , ";
-  // }
-  // std::cout << std::endl;
 }
 
 void NbodyEngine::calculateForces_Euler_Serial() {

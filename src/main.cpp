@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
   options.add_options()
     ("x,width", "Window Width", cxxopts::value<std::string>()->default_value("1920"))
     ("y,height", "Window Height", cxxopts::value<std::string>()->default_value("1080"))
-    ("g,enable-gpu", "Use GPU", cxxopts::value<std::string>()->default_value("1")) // CPU compute is broken due to thread sync issue, use only GPU
+    ("g,enable-gpu", "Use GPU", cxxopts::value<std::string>()->default_value("1")) // GPU is default
     ("f,file", "Input file", cxxopts::value<std::string>()->default_value("input.yaml"))
     ("h,help", "Print usage");
   // clang-format on

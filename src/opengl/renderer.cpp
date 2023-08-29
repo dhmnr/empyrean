@@ -137,24 +137,33 @@ void GlRenderer::mainLoop() {
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   cudaGraphicsResource_t cudaResource;
-  cudaError_t cudaStatus
-      = cudaGraphicsGLRegisterBuffer(&cudaResource, VBO, cudaGraphicsMapFlagsNone);
-  if (cudaStatus != cudaSuccess) {
-    std::cerr << "cudaGraphicsGLRegisterBuffer error: " << cudaGetErrorString(cudaStatus)
-              << std::endl;
-  }
-  // Map the CUDA graphics resource
-  cudaGraphicsMapResources(1, &cudaResource);
-  size_t size = numBodies * 3;
-  // float* hostPointer = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 
-  {
-    std::lock_guard<std::mutex> lock(sharedData.get().mtx);
-    cudaGraphicsResourceGetMappedPointer(&sharedData.get().devicePointer, &size, cudaResource);
+  if (useGpu) {
+    cudaError_t cudaStatus
+        = cudaGraphicsGLRegisterBuffer(&cudaResource, VBO, cudaGraphicsMapFlagsNone);
+    if (cudaStatus != cudaSuccess) {
+      std::cerr << "cudaGraphicsGLRegisterBuffer error: " << cudaGetErrorString(cudaStatus)
+                << std::endl;
+    }
+    // Map the CUDA graphics resource
+    cudaGraphicsMapResources(1, &cudaResource);
+    size_t size = numBodies * 3;
+    {
+      std::lock_guard<std::mutex> lock(sharedData.get().mtx);
+      cudaGraphicsResourceGetMappedPointer(&sharedData.get().devicePointer, &size, cudaResource);
 
-    // sharedData.get().hostPointer = hostPointer;
-    sharedData.get().cv.notify_one();
+      sharedData.get().cv.notify_one();
+    }
+  } else {
+    // float* hostPointer = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+    {
+      std::lock_guard<std::mutex> lock(sharedData.get().mtx);
+
+      // sharedData.get().hostPointer = hostPointer;
+      sharedData.get().cv.notify_one();
+    }
   }
+
   FpsCounter fpsCounter("OpenGL Renderer");
   while (!glfwWindowShouldClose(window)) {
     fpsCounter.displayFps();
@@ -166,14 +175,21 @@ void GlRenderer::mainLoop() {
     glUseProgram(shaderProgram);
     glUniform1f(glGetUniformLocation(shaderProgram, "scaleFactor"), scaleFactor);
     glDrawArrays(GL_POINTS, 0, numBodies);
-
+    if (!useGpu) {
+      glBufferData(GL_ARRAY_BUFFER, numBodies * 3 * sizeof(float), sharedData.get().hostPointer,
+                   GL_DYNAMIC_DRAW);
+    }
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
-  // glUnmapBuffer(GL_ARRAY_BUFFER);
   sharedData.get().stopRequested = true;
-  cudaGraphicsUnmapResources(1, &cudaResource);
-  cudaGraphicsUnregisterResource(cudaResource);
+  if (useGpu) {
+    cudaGraphicsUnmapResources(1, &cudaResource);
+    cudaGraphicsUnregisterResource(cudaResource);
+  }
+  //  else {
+  //   // glUnmapBuffer(GL_ARRAY_BUFFER);
+  // }
 }
 
 void GlRenderer::setGlFlags() { glEnable(GL_VERTEX_PROGRAM_POINT_SIZE); }

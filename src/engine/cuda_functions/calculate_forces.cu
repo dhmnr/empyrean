@@ -66,7 +66,7 @@ void NbodyEngine::initDeviceArrays() {
 }
 
 void NbodyEngine::calculateForces_Euler_Parallel() {
-  int threadlen = 16;
+  int threadlen = 8;
   dim3 blockSize(threadlen, threadlen);
 
   int blocklen = (int)ceil((float)state.objCount / threadlen);

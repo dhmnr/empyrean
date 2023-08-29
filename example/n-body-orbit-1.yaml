@@ -1,0 +1,101 @@
+---
+# units:
+#   time: s
+#   mass: kg
+#   distance: m
+#   velocity: mps
+
+global:
+  scale-factor: 5e5
+  time-step: 2e3
+
+objects:
+  static:
+    - body:
+        mass: 1e20
+        position: [0,0,0]
+        velocity: [0,0,0]
+#----------------------------
+    - body:
+        mass: 1e10
+        position: [0,1e8,0]
+        velocity: [8.16,0,0]
+    - body:
+        mass: 1e10
+        position: [0,2e8,0]
+        velocity: [5.76,0,0]
+    - body:
+        mass: 1e10
+        position: [0,3e8,0]
+        velocity: [4.17,0,0]
+    - body:
+        mass: 1e10
+        position: [0,4e8,0]
+        velocity: [4.08,0,0]
+    - body:
+        mass: 1e10
+        position: [0,5e8,0]
+        velocity: [3.64,0,0]
+#-----------------------------
+    - body:
+        mass: 1e10
+        position: [0,-1e8,0]
+        velocity: [-8.16,0,0]
+    - body:
+        mass: 1e10
+        position: [0,-2e8,0]
+        velocity: [-5.76,0,0]
+    - body:
+        mass: 1e10
+        position: [0,-3e8,0]
+        velocity: [-4.17,0,0]
+    - body:
+        mass: 1e10
+        position: [0,-4e8,0]
+        velocity: [-4.08,0,0]
+    - body:
+        mass: 1e10
+        position: [0,-5e8,0]
+        velocity: [-3.64,0,0]
+#----------------------------
+    - body:
+        mass: 1e10
+        position: [1e8,0,0]
+        velocity: [0,8.16,0]
+    - body:
+        mass: 1e10
+        position: [2e8,0,0]
+        velocity: [0,5.76,0]
+    - body:
+        mass: 1e10
+        position: [3e8,0,0]
+        velocity: [0,4.17,0]
+    - body:
+        mass: 1e10
+        position: [4e8,0,0]
+        velocity: [0,4.08,0]
+    - body:
+        mass: 1e10
+        position: [5e8,0,0]
+        velocity: [0,3.64,0]
+#-----------------------------
+    - body:
+        mass: 1e10
+        position: [-1e8,0,0]
+        velocity: [0,-8.16,0]
+    - body:
+        mass: 1e10
+        position: [-2e8,0,0]
+        velocity: [0,-5.76,0]
+    - body:
+        mass: 1e10
+        position: [-3e8,0,0]
+        velocity: [0,-4.17,0]
+    - body:
+        mass: 1e10
+        position: [-4e8,0,0]
+        velocity: [0,-4.08,0]
+    - body:
+        mass: 1e10
+        position: [-5e8,0,0]
+        velocity: [0,-3.64,0]

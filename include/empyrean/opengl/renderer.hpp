@@ -10,15 +10,16 @@
 #include <glm/glm.hpp>
 
 #include "empyrean/engine/nbody_engine.hpp"
-#include "empyrean/structs.hpp"
+#include "empyrean/utils/structs.hpp"
 
 class GlRenderer {
 public:
   GLFWwindow* window;
   GLuint VBO, VAO, shaderProgram;
-  int width, height, numBodies;
+  int width, height, numBodies, useGpu;
   std::reference_wrapper<SharedData> sharedData;
-  GlRenderer(std::string title, int width, int height, int numBodies, SharedData& sharedData);
+  GlRenderer(std::string title, int width, int height, int numBodies, int useGpu,
+             SharedData& sharedData);
   ~GlRenderer();
   void compileShaders();
   void initVertexData();

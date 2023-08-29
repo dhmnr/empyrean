@@ -2,27 +2,28 @@
 
 #include "empyrean/engine/nbody_engine.hpp"
 #include "empyrean/opengl/renderer.hpp"
-#include "empyrean/structs.hpp"
+#include "empyrean/utils/structs.hpp"
 
 const double GRAVITY_CONSTANT = 6.6743e-11;
 
-void startEngine(EngineState initialState, std::reference_wrapper<SharedData> sharedData) {
-  NbodyEngine engine(initialState, sharedData, EULER);
+void startEngine(InitialState initialState, std::reference_wrapper<SharedData> sharedData,
+                 int enableGpu) {
+  NbodyEngine engine(initialState, sharedData, EULER, enableGpu);
   engine.start();
 }
 
 void startRenderer(std::string title, int width, int height, int numBodies,
-                   std::reference_wrapper<SharedData> sharedData) {
-  GlRenderer renderer(title, width, height, numBodies, sharedData);
+                   std::reference_wrapper<SharedData> sharedData, int useGpu) {
+  GlRenderer renderer(title, width, height, numBodies, useGpu, sharedData);
   renderer.start();
 }
 
-void startAll(std::map<std::string, std::string> startOpts) {
+void startAll(std::map<std::string, std::string> stringOpts) {
   SharedData sharedData;
 
-  int width = std::stoi(startOpts["wndWidth"]), height = std::stoi(startOpts["wndHeight"]);
+  int width = std::stoi(stringOpts["wndWidth"]), height = std::stoi(stringOpts["wndHeight"]);
 
-  EngineState initialState
+  InitialState initialState
       = {{Body(glm::dvec3(0, 0, 0), (1000 / GRAVITY_CONSTANT), glm::dvec3(0, 0, 0)),
           Body(glm::dvec3(-200, 0, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0, 1.7, 0)),
           Body(glm::dvec3(300, 0, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0, -1.5, 0)),
@@ -45,12 +46,14 @@ void startAll(std::map<std::string, std::string> startOpts) {
           Body(glm::dvec3(0, -1300, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0.8, 0, 0)),
           Body(glm::dvec3(0, 1600, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(-0.5, 0, 0)),
           Body(glm::dvec3(0, -1900, 0), 0.1 / GRAVITY_CONSTANT, glm::dvec3(0.3, 0, 0))},
+         22,
          GRAVITY_CONSTANT,
          5e-3};
 
-  std::thread engineThread(startEngine, initialState, std::ref(sharedData));
+  std::thread engineThread(startEngine, initialState, std::ref(sharedData),
+                           std::stoi(stringOpts["enableGpu"]));
   engineThread.detach();
 
-  startRenderer(startOpts["wndTitle"], width, height, initialState.bodies.size(),
-                std::ref(sharedData));
+  startRenderer(stringOpts["wndTitle"], width, height, initialState.objCount, std::ref(sharedData),
+                std::stoi(stringOpts["enableGpu"]));
 }

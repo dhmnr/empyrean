@@ -6,7 +6,8 @@ set(SOURCES
   src/engine/nbody_engine.cpp
   src/opengl/renderer.cpp
   src/utils/fps_counter.cpp
-  # src/engine/real_vector.cpp
+  src/engine/cuda_functions/calculate_forces.cu
+    # src/engine/real_vector.cpp
 )
 
 set(EXE_SOURCES

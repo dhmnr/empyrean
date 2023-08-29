@@ -1,8 +1,11 @@
 
 #include "empyrean/opengl/renderer.hpp"
 
-#include "empyrean/structs.hpp"
+#include <cuda_gl_interop.h>
+#include <cuda_runtime_api.h>
+
 #include "empyrean/utils/fps_counter.hpp"
+#include "empyrean/utils/structs.hpp"
 
 float scaleFactor = 1.0f;
 
@@ -31,9 +34,9 @@ void GlRenderer::processInput() {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 }
 
-GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies,
+GlRenderer::GlRenderer(std::string title, int width, int height, int numBodies, int useGpu,
                        SharedData& sharedData)
-    : width(width), height(height), numBodies(numBodies), sharedData(sharedData) {
+    : width(width), height(height), numBodies(numBodies), sharedData(sharedData), useGpu(useGpu) {
   // glfw: initialize and configure
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -133,14 +136,25 @@ void GlRenderer::mainLoop() {
 
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  float* vertexDataPtr = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+  cudaGraphicsResource_t cudaResource;
+  cudaError_t cudaStatus
+      = cudaGraphicsGLRegisterBuffer(&cudaResource, VBO, cudaGraphicsMapFlagsNone);
+  if (cudaStatus != cudaSuccess) {
+    std::cerr << "cudaGraphicsGLRegisterBuffer error: " << cudaGetErrorString(cudaStatus)
+              << std::endl;
+  }
+  // Map the CUDA graphics resource
+  cudaGraphicsMapResources(1, &cudaResource);
+  size_t size = numBodies * 3;
+  // float* hostPointer = static_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 
   {
     std::lock_guard<std::mutex> lock(sharedData.get().mtx);
-    sharedData.get().vertexDataPtr = vertexDataPtr;  // Modify shared data safely
+    cudaGraphicsResourceGetMappedPointer(&sharedData.get().devicePointer, &size, cudaResource);
+
+    // sharedData.get().hostPointer = hostPointer;
     sharedData.get().cv.notify_one();
   }
-
   FpsCounter fpsCounter("OpenGL Renderer");
   while (!glfwWindowShouldClose(window)) {
     fpsCounter.displayFps();
@@ -156,8 +170,10 @@ void GlRenderer::mainLoop() {
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
-  glUnmapBuffer(GL_ARRAY_BUFFER);
+  // glUnmapBuffer(GL_ARRAY_BUFFER);
   sharedData.get().stopRequested = true;
+  cudaGraphicsUnmapResources(1, &cudaResource);
+  cudaGraphicsUnregisterResource(cudaResource);
 }
 
 void GlRenderer::setGlFlags() { glEnable(GL_VERTEX_PROGRAM_POINT_SIZE); }

@@ -8,7 +8,7 @@ The core of empyrean, handles the physics calculations and simulation loop.
 
 # Rendering and Visualization
 The rendering component handles the visualization of the particles and the simulation.
- - [ ] Render anti-aliased circular points
+ - [X] Render anti-aliased circular points
  - [ ] Add more camera controls
  - [ ] Support pause/resume and controlling simulation speed 
  - [ ] Support Vulkan
